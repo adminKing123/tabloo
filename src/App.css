@@ -1,0 +1,42 @@
+/* App specific styles */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Nested indicators */
+.nested-item {
+  border-left: 2px solid #e5e7eb;
+  transition: border-color 0.2s;
+}
+
+.nested-item:hover {
+  border-left-color: #3b82f6;
+}
+
+/* Table styles */
+.table-cell-editable {
+  min-height: 36px;
+  padding: 8px;
+  cursor: text;
+}
+
+.table-cell-editable:hover {
+  background-color: #f9fafb;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
