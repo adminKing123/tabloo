@@ -408,6 +408,15 @@ export default function ColumnManagerModal({ isOpen, onClose, columns, onSave })
                         )}
                         <span className="text-sm text-gray-700">Visible</span>
                       </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={column.sortable === true}
+                          onChange={(e) => handleUpdateColumn(index, 'sortable', e.target.checked)}
+                          className="rounded"
+                        />
+                        <span className="text-sm text-gray-700">Sortable</span>
+                      </label>
                     </div>
                     <div className="flex gap-2">
                       <Button

@@ -1,26 +1,85 @@
 import { Button } from 'flowbite-react';
-import { Plus, Trash2, ExternalLink, GripVertical } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, GripVertical, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TableCell from './TableCell';
 import { truncate } from '../../utils/helpers';
 
 /**
  * Table View Component - Display data in table format
  */
-export default function TableView({ columns, records, onUpdateRecord, onDeleteRecord, onAddRecord, onUpdateColumns, onUpdateRecords }) {
+export default function TableView({ columns, records, onUpdateRecord, onDeleteRecord, onAddRecord, onUpdateColumns, onUpdateRecords, table, onUpdateTable }) {
   const navigate = useNavigate();
   const { projectId, tableId } = useParams();
   const [draggedColumnIndex, setDraggedColumnIndex] = useState(null);
   const [draggedRecordId, setDraggedRecordId] = useState(null);
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState('asc');
+
+  // Load sort state from table when it changes or loads
+  useEffect(() => {
+    if (table?.sortColumnId && columns.length > 0) {
+      const column = columns.find(c => c.id === table.sortColumnId);
+      if (column) {
+        setSortColumn(column);
+        setSortDirection(table.sortDirection || 'asc');
+      } else {
+        // Column not found, clear sort
+        setSortColumn(null);
+        setSortDirection('asc');
+      }
+    } else {
+      setSortColumn(null);
+      setSortDirection('asc');
+    }
+  }, [table?.sortColumnId, table?.sortDirection, columns]);
 
   // Filter visible columns and sort by order
   const visibleColumns = columns
     .filter(col => col.visible !== false)
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  // Sort records by order
-  const sortedRecords = [...records].sort((a, b) => (a.order || 0) - (b.order || 0));
+  // Sort records - by selected column or by order
+  const sortedRecords = [...records].sort((a, b) => {
+    // If a sort column is selected, sort by that
+    if (sortColumn) {
+      const aValue = a.data?.[sortColumn.id];
+      const bValue = b.data?.[sortColumn.id];
+      
+      // Handle empty values
+      if (aValue === undefined || aValue === null || aValue === '') {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
+      if (bValue === undefined || bValue === null || bValue === '') {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+      
+      // Compare based on column type
+      let comparison = 0;
+      
+      if (sortColumn.type === 'number') {
+        const numA = parseFloat(aValue);
+        const numB = parseFloat(bValue);
+        comparison = numA - numB;
+      } else if (sortColumn.type === 'date') {
+        const dateA = new Date(aValue).getTime();
+        const dateB = new Date(bValue).getTime();
+        comparison = dateA - dateB;
+      } else if (sortColumn.type === 'boolean') {
+        const boolA = aValue === true || aValue === 'true' ? 1 : 0;
+        const boolB = bValue === true || bValue === 'true' ? 1 : 0;
+        comparison = boolA - boolB;
+      } else {
+        // Text, status, dropdown, longText, url, email, tags - string comparison
+        comparison = String(aValue).localeCompare(String(bValue), undefined, { numeric: true, sensitivity: 'base' });
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison;
+    }
+    
+    // Default: sort by record order
+    return (a.order || 0) - (b.order || 0);
+  });
 
   const handleCellChange = async (recordId, columnId, value) => {
     const record = records.find(r => r.id === recordId);
@@ -142,6 +201,42 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
     setDraggedRecordId(null);
   };
 
+  // Handle column header click for sorting
+  const handleColumnSort = async (column) => {
+    // Only allow sorting if explicitly enabled
+    if (column.sortable !== true) return;
+    
+    let newDirection = 'asc';
+    let newColumn = column;
+    
+    if (sortColumn?.id === column.id) {
+      // Toggle direction or clear sort
+      if (sortDirection === 'asc') {
+        newDirection = 'desc';
+      } else {
+        // Clear sort, return to default order
+        newColumn = null;
+        newDirection = 'asc';
+      }
+    }
+    
+    // Update local state
+    setSortColumn(newColumn);
+    setSortDirection(newDirection);
+    
+    // Persist to database
+    if (onUpdateTable && table) {
+      try {
+        await onUpdateTable(table.id, {
+          sortColumnId: newColumn?.id || null,
+          sortDirection: newDirection
+        });
+      } catch (error) {
+        console.error('Failed to save sort state:', error);
+      }
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse bg-white">
@@ -162,16 +257,38 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 onDragLeave={handleColumnDragLeave}
                 onDrop={(e) => handleColumnDrop(e, index)}
                 onDragEnd={handleColumnDragEnd}
-           sortedR    className={`text-left px-4 py-3 font-semibold text-gray-900 min-w-[150px] cursor-move transition-colors ${
+                className={`text-left px-4 py-3 font-semibold text-gray-900 min-w-[150px] transition-colors ${
                   draggedColumnIndex === index ? 'opacity-50' : ''
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <GripVertical className="w-4 h-4 text-gray-400" />
-                  <span>{column.name}</span>
-                  {column.required && (
-                    <span className="text-red-500">*</span>
-                  )}
+                  <div className="cursor-move flex-shrink-0">
+                    <GripVertical className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <div 
+                    className={`flex items-center gap-2 flex-1 ${
+                      column.sortable === true ? 'cursor-pointer hover:text-blue-600' : ''
+                    }`}
+                    onClick={() => handleColumnSort(column)}
+                  >
+                    <span>{column.name}</span>
+                    {column.required && (
+                      <span className="text-red-500">*</span>
+                    )}
+                    {column.sortable === true && (
+                      <span className="text-gray-400">
+                        {sortColumn?.id === column.id ? (
+                          sortDirection === 'asc' ? (
+                            <ArrowUp className="w-4 h-4 text-blue-600" />
+                          ) : (
+                            <ArrowDown className="w-4 h-4 text-blue-600" />
+                          )
+                        ) : (
+                          <ArrowUpDown className="w-4 h-4" />
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </th>
             ))}
@@ -179,7 +296,7 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
           </tr>
         </thead>
         <tbody>
-          {records.map((record) => (
+          {sortedRecords.map((record) => (
             <tr 
               key={record.id} 
               draggable

@@ -33,6 +33,7 @@ export default function GlobalTablePage() {
     updateColumns,
     deleteColumn,
     deleteTable,
+    updateTable,
     clearError
   } = useStore();
 
@@ -247,6 +248,8 @@ export default function GlobalTablePage() {
               onAddRecord={handleAddRecord}
               onUpdateColumns={updateColumns}
               onUpdateRecords={updateRecords}
+              table={currentTable}
+              onUpdateTable={updateTable}
             />
           </div>
         )}

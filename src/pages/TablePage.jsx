@@ -33,6 +33,7 @@ export default function TablePage() {
     updateColumns,
     deleteColumn,
     deleteTable,
+    updateTable,
     clearError
   } = useStore();
 
@@ -262,6 +263,8 @@ export default function TablePage() {
               onAddRecord={handleAddRecord}
               onUpdateColumns={updateColumns}
               onUpdateRecords={updateRecords}
+              table={currentTable}
+              onUpdateTable={updateTable}
             />
           </div>
         )}
