@@ -37,7 +37,7 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-4">
+        <nav className="flex-1 overflow-x-hidden overflow-y-auto">
           <FlowbiteSidebar aria-label="Navigation">
             <FlowbiteSidebar.Items>
               <FlowbiteSidebar.ItemGroup>
