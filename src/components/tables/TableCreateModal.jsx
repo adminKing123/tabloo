@@ -159,7 +159,7 @@ export default function TableCreateModal({
                         <ProjectIcon icon={template.icon} className="w-8 h-8" />
                       </div>
                       <h4 className="font-semibold text-gray-900">{template.name}</h4>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">
                         {template.description}
                       </p>
                       <p className="text-xs text-gray-500 mt-2">

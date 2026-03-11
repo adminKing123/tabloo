@@ -25,7 +25,7 @@ export default function ProjectCard({ project, onEdit, onDelete }) {
             <h3 className="text-lg font-semibold text-gray-900">
               {project.name}
             </h3>
-            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+            <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">
               {project.description || 'No description'}
             </p>
           </div>

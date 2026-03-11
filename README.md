@@ -22,6 +22,10 @@ A fully functional web application for organizing projects, managing data with c
 - Nested tables (tables within records)
 - Search and filter records
 - Column management
+- Column resizing with persistent widths
+- Column reordering via drag and drop
+- Sortable columns with persistent sort state
+- Full text display with proper line breaks (no truncation)
 
 ### 🎨 Built-in Templates
 1. **Project Management** - Track tasks, status, and assignments

@@ -203,7 +203,7 @@ export default function RecordPage() {
                 {columns.map((column) => (
                   <div key={column.id}>
                     <span className="text-sm font-medium text-gray-500">{column.name}</span>
-                    <p className="text-gray-900">
+                    <p className="text-gray-900 whitespace-pre-wrap break-words">
                       {currentRecord.data[column.id] || <span className="text-gray-400">Empty</span>}
                     </p>
                   </div>

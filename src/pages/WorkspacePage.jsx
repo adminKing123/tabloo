@@ -242,7 +242,7 @@ export default function WorkspacePage() {
                         className="flex items-center gap-3 flex-1 text-left min-w-0"
                       >
                         <Database className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                        <span className="font-medium text-gray-900 truncate">{table.name}</span>
+                        <span className="font-medium text-gray-900 break-words">{table.name}</span>
                       </button>
                       <Dropdown
                         label=""

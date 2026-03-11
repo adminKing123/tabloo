@@ -217,7 +217,7 @@ export default function TableCell({ column, value, onChange }) {
       
       case COLUMN_TYPES.URL:
         return value ? (
-          <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+          <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
             {value}
           </a>
         ) : (
@@ -226,7 +226,7 @@ export default function TableCell({ column, value, onChange }) {
       
       case COLUMN_TYPES.EMAIL:
         return value ? (
-          <a href={`mailto:${value}`} className="text-blue-600 hover:underline">
+          <a href={`mailto:${value}`} className="text-blue-600 hover:underline break-all">
             {value}
           </a>
         ) : (
@@ -235,14 +235,14 @@ export default function TableCell({ column, value, onChange }) {
       
       case COLUMN_TYPES.LONG_TEXT:
         return value ? (
-          <div className="line-clamp-2">{value}</div>
+          <div className="whitespace-pre-wrap break-words">{value}</div>
         ) : (
           <span className="text-gray-400">No content</span>
         );
       
       default:
         return value ? (
-          <span>{value}</span>
+          <span className="break-words whitespace-pre-wrap">{value}</span>
         ) : (
           <span className="text-gray-400">Empty</span>
         );

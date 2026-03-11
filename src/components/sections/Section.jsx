@@ -40,7 +40,7 @@ export default function Section({
                 <ChevronRight className="w-5 h-5" />
               )}
             </button>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-gray-900 break-words">
               {section.name}
             </h3>
             <span className="text-xs text-gray-500">
@@ -99,7 +99,7 @@ export default function Section({
                       className="flex items-center gap-3 flex-1 text-left"
                     >
                       <TableIcon className="w-5 h-5 text-gray-600" />
-                      <span className="font-medium text-gray-900">{table.name}</span>
+                      <span className="font-medium text-gray-900 break-words">{table.name}</span>
                     </button>
                     <Dropdown
                       label=""

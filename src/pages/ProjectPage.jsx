@@ -195,7 +195,7 @@ export default function ProjectPage() {
                     className="flex items-center gap-3 flex-1 text-left"
                   >
                     <TableIcon className="w-6 h-6 text-gray-600" />
-                    <span className="font-medium text-gray-900">{table.name}</span>
+                    <span className="font-medium text-gray-900 break-words">{table.name}</span>
                   </button>
                   <Dropdown
                     label=""

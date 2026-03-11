@@ -158,7 +158,7 @@ export default function TablePage() {
               <ChevronLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 break-words">
                 {currentTable.name}
               </h1>
               <p className="text-gray-600 mt-1">

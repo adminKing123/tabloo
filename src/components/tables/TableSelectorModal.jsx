@@ -131,7 +131,7 @@ export default function TableSelectorModal({ isOpen, onClose, onSelect }) {
                     <ChevronRight className="w-4 h-4 text-gray-500" />
                   )}
                   <Database className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium truncate">Global Tables</span>
+                  <span className="text-sm font-medium break-words">Global Tables</span>
                 </button>
               </div>
               
@@ -150,7 +150,7 @@ export default function TableSelectorModal({ isOpen, onClose, onSelect }) {
                       <ChevronRight className="w-4 h-4 text-gray-500" />
                     )}
                     <Folder className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm truncate">{project.name}</span>
+                    <span className="text-sm break-words">{project.name}</span>
                   </button>
                 </div>
               ))}
@@ -173,7 +173,7 @@ export default function TableSelectorModal({ isOpen, onClose, onSelect }) {
                     }`}
                   >
                     <TableIcon className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm truncate">{table.name}</span>
+                    <span className="text-sm break-words">{table.name}</span>
                   </button>
                 ))}
               </div>
@@ -201,7 +201,7 @@ export default function TableSelectorModal({ isOpen, onClose, onSelect }) {
                   >
                     <Database className="w-4 h-4 text-gray-600" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{column.name}</div>
+                      <div className="text-sm font-medium break-words">{column.name}</div>
                       <div className="text-xs text-gray-500">{column.type}</div>
                     </div>
                   </button>

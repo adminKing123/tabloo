@@ -66,7 +66,7 @@ export default function Sidebar() {
                     >
                       <div className="flex items-center gap-2">
                         <ProjectIcon icon={project.icon || 'Folder'} className="w-4 h-4" />
-                        <span className="truncate">{project.name}</span>
+                        <span className="break-words">{project.name}</span>
                       </div>
                     </FlowbiteSidebar.Item>
                   ))}
