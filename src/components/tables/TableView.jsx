@@ -13,8 +13,8 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
   const { projectId, tableId } = useParams();
   const [draggedColumnIndex, setDraggedColumnIndex] = useState(null);
   const [draggedRecordId, setDraggedRecordId] = useState(null);
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortDirection, setSortDirection] = useState('asc');
+  // Multi-column sorting: array of { column, direction }
+  const [sortColumns, setSortColumns] = useState([]);
   
   // Column resizing state
   const [resizingColumn, setResizingColumn] = useState(null);
@@ -24,63 +24,83 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
 
   // Load sort state from table when it changes or loads
   useEffect(() => {
-    if (table?.sortColumnId && columns.length > 0) {
+    if (table?.sortConfig && Array.isArray(table.sortConfig) && columns.length > 0) {
+      // Load multi-column sort from new format
+      const validSorts = table.sortConfig
+        .map(sort => ({
+          column: columns.find(c => c.id === sort.columnId),
+          direction: sort.direction || 'asc'
+        }))
+        .filter(sort => sort.column); // Only include sorts with valid columns
+      setSortColumns(validSorts);
+    } else if (table?.sortColumnId && columns.length > 0) {
+      // Support legacy single-column sort
       const column = columns.find(c => c.id === table.sortColumnId);
       if (column) {
-        setSortColumn(column);
-        setSortDirection(table.sortDirection || 'asc');
+        setSortColumns([{ column, direction: table.sortDirection || 'asc' }]);
       } else {
-        // Column not found, clear sort
-        setSortColumn(null);
-        setSortDirection('asc');
+        setSortColumns([]);
       }
     } else {
-      setSortColumn(null);
-      setSortDirection('asc');
+      setSortColumns([]);
     }
-  }, [table?.sortColumnId, table?.sortDirection, columns]);
+  }, [table?.sortColumnId, table?.sortDirection, table?.sortConfig, columns]);
 
   // Filter visible columns and sort by order
   const visibleColumns = columns
     .filter(col => col.visible !== false)
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  // Sort records - by selected column or by order
+  // Helper function to compare values based on column type
+  const compareValues = (aValue, bValue, column, direction) => {
+    // Handle empty values
+    if (aValue === undefined || aValue === null || aValue === '') {
+      return direction === 'asc' ? 1 : -1;
+    }
+    if (bValue === undefined || bValue === null || bValue === '') {
+      return direction === 'asc' ? -1 : 1;
+    }
+    
+    // Compare based on column type
+    let comparison = 0;
+    
+    if (column.type === 'number') {
+      const numA = parseFloat(aValue);
+      const numB = parseFloat(bValue);
+      comparison = numA - numB;
+    } else if (column.type === 'date') {
+      const dateA = new Date(aValue).getTime();
+      const dateB = new Date(bValue).getTime();
+      comparison = dateA - dateB;
+    } else if (column.type === 'boolean') {
+      const boolA = aValue === true || aValue === 'true' ? 1 : 0;
+      const boolB = bValue === true || bValue === 'true' ? 1 : 0;
+      comparison = boolA - boolB;
+    } else {
+      // Text, status, dropdown, longText, url, email, tags - string comparison
+      comparison = String(aValue).localeCompare(String(bValue), undefined, { numeric: true, sensitivity: 'base' });
+    }
+    
+    return direction === 'asc' ? comparison : -comparison;
+  };
+
+  // Sort records - by selected columns (multi-column sort) or by order
   const sortedRecords = [...records].sort((a, b) => {
-    // If a sort column is selected, sort by that
-    if (sortColumn) {
-      const aValue = a.data?.[sortColumn.id];
-      const bValue = b.data?.[sortColumn.id];
-      
-      // Handle empty values
-      if (aValue === undefined || aValue === null || aValue === '') {
-        return sortDirection === 'asc' ? 1 : -1;
+    // If sort columns are selected, apply them in order
+    if (sortColumns.length > 0) {
+      for (const { column, direction } of sortColumns) {
+        const aValue = a.data?.[column.id];
+        const bValue = b.data?.[column.id];
+        const comparison = compareValues(aValue, bValue, column, direction);
+        
+        // If not equal, return the comparison result
+        if (comparison !== 0) {
+          return comparison;
+        }
+        // If equal, continue to next sort column
       }
-      if (bValue === undefined || bValue === null || bValue === '') {
-        return sortDirection === 'asc' ? -1 : 1;
-      }
-      
-      // Compare based on column type
-      let comparison = 0;
-      
-      if (sortColumn.type === 'number') {
-        const numA = parseFloat(aValue);
-        const numB = parseFloat(bValue);
-        comparison = numA - numB;
-      } else if (sortColumn.type === 'date') {
-        const dateA = new Date(aValue).getTime();
-        const dateB = new Date(bValue).getTime();
-        comparison = dateA - dateB;
-      } else if (sortColumn.type === 'boolean') {
-        const boolA = aValue === true || aValue === 'true' ? 1 : 0;
-        const boolB = bValue === true || bValue === 'true' ? 1 : 0;
-        comparison = boolA - boolB;
-      } else {
-        // Text, status, dropdown, longText, url, email, tags - string comparison
-        comparison = String(aValue).localeCompare(String(bValue), undefined, { numeric: true, sensitivity: 'base' });
-      }
-      
-      return sortDirection === 'asc' ? comparison : -comparison;
+      // All sort columns are equal, maintain original order
+      return 0;
     }
     
     // Default: sort by record order
@@ -208,34 +228,61 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
   };
 
   // Handle column header click for sorting
-  const handleColumnSort = async (column) => {
+  const handleColumnSort = async (column, shiftKey) => {
     // Only allow sorting if explicitly enabled
     if (column.sortable !== true) return;
     
-    let newDirection = 'asc';
-    let newColumn = column;
+    let newSortColumns;
+    const existingIndex = sortColumns.findIndex(s => s.column.id === column.id);
     
-    if (sortColumn?.id === column.id) {
-      // Toggle direction or clear sort
-      if (sortDirection === 'asc') {
-        newDirection = 'desc';
+    if (shiftKey && sortColumns.length > 0) {
+      // Shift+click: Add to multi-column sort or toggle existing
+      if (existingIndex >= 0) {
+        const existing = sortColumns[existingIndex];
+        if (existing.direction === 'asc') {
+          // Toggle to desc
+          newSortColumns = [...sortColumns];
+          newSortColumns[existingIndex] = { column, direction: 'desc' };
+        } else {
+          // Remove from sort
+          newSortColumns = sortColumns.filter((_, i) => i !== existingIndex);
+        }
       } else {
-        // Clear sort, return to default order
-        newColumn = null;
-        newDirection = 'asc';
+        // Add new column to sort
+        newSortColumns = [...sortColumns, { column, direction: 'asc' }];
+      }
+    } else {
+      // Regular click: Single column sort
+      if (existingIndex >= 0 && sortColumns.length === 1) {
+        const existing = sortColumns[0];
+        if (existing.direction === 'asc') {
+          // Toggle to desc
+          newSortColumns = [{ column, direction: 'desc' }];
+        } else {
+          // Clear sort
+          newSortColumns = [];
+        }
+      } else {
+        // Set as single sort column
+        newSortColumns = [{ column, direction: 'asc' }];
       }
     }
     
     // Update local state
-    setSortColumn(newColumn);
-    setSortDirection(newDirection);
+    setSortColumns(newSortColumns);
     
     // Persist to database
     if (onUpdateTable && table) {
       try {
+        const sortConfig = newSortColumns.map(s => ({
+          columnId: s.column.id,
+          direction: s.direction
+        }));
         await onUpdateTable(table.id, {
-          sortColumnId: newColumn?.id || null,
-          sortDirection: newDirection
+          sortConfig,
+          // Keep legacy fields for backward compatibility
+          sortColumnId: sortConfig[0]?.columnId || null,
+          sortDirection: sortConfig[0]?.direction || 'asc'
         });
       } catch (error) {
         console.error('Failed to save sort state:', error);
@@ -356,25 +403,35 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                     className={`flex items-center gap-2 flex-1 ${
                       column.sortable === true ? 'cursor-pointer hover:text-blue-600' : ''
                     }`}
-                    onClick={() => handleColumnSort(column)}
+                    onClick={(e) => handleColumnSort(column, e.shiftKey)}
                   >
                     <span>{column.name}</span>
                     {column.required && (
                       <span className="text-red-500">*</span>
                     )}
-                    {column.sortable === true && (
-                      <span className="text-gray-400">
-                        {sortColumn?.id === column.id ? (
-                          sortDirection === 'asc' ? (
-                            <ArrowUp className="w-4 h-4 text-blue-600" />
+                    {column.sortable === true && (() => {
+                      const sortIndex = sortColumns.findIndex(s => s.column.id === column.id);
+                      const sortInfo = sortIndex >= 0 ? sortColumns[sortIndex] : null;
+                      
+                      return (
+                        <span className="text-gray-400 flex items-center gap-0.5">
+                          {sortInfo ? (
+                            <>
+                              {sortInfo.direction === 'asc' ? (
+                                <ArrowUp className="w-4 h-4 text-blue-600" />
+                              ) : (
+                                <ArrowDown className="w-4 h-4 text-blue-600" />
+                              )}
+                              {sortColumns.length > 1 && (
+                                <span className="text-xs font-bold text-blue-600">{sortIndex + 1}</span>
+                              )}
+                            </>
                           ) : (
-                            <ArrowDown className="w-4 h-4 text-blue-600" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="w-4 h-4" />
-                        )}
-                      </span>
-                    )}
+                            <ArrowUpDown className="w-4 h-4" />
+                          )}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
                 {/* Resize handle */}
