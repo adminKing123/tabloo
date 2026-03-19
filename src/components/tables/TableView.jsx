@@ -1,5 +1,5 @@
 import { Button } from 'flowbite-react';
-import { Trash2, ExternalLink, GripVertical, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { Trash2, ExternalLink, GripVertical, ArrowUp, ArrowDown, ArrowUpDown, Plus } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import TableCell from './TableCell';

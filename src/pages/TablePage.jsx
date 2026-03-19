@@ -208,7 +208,7 @@ export default function TablePage() {
     <Layout>
       <div className="max-w-full">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-start justify-between mb-6">
           <div className="flex items-start gap-4">
             <Button
               color="light"
