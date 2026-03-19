@@ -29,13 +29,15 @@ export default function ColumnManagerModal({ isOpen, onClose, columns, onSave })
   }, [columns, isOpen]);
 
   const handleAddColumn = () => {
+    const defaultWidth = 180; // Default width for new columns
     const newColumn = {
       id: generateColumnId(),
       name: 'New Column',
       type: COLUMN_TYPES.TEXT,
       required: false,
       visible: true,
-      order: editingColumns.length
+      order: editingColumns.length,
+      width: defaultWidth
     };
     setEditingColumns([...editingColumns, newColumn]);
   };
@@ -152,6 +154,28 @@ export default function ColumnManagerModal({ isOpen, onClose, columns, onSave })
         updated[index].options = value === COLUMN_TYPES.STATUS 
           ? [...DEFAULT_STATUS_OPTIONS]
           : [...DEFAULT_PRIORITY_OPTIONS];
+      }
+    }
+    
+    // Set appropriate width based on column type
+    if (field === 'type') {
+      const typeWidths = {
+        [COLUMN_TYPES.LINKS]: 220,
+        [COLUMN_TYPES.LONG_TEXT]: 250,
+        [COLUMN_TYPES.TAGS]: 220,
+        [COLUMN_TYPES.DROPDOWN]: 180,
+        [COLUMN_TYPES.STATUS]: 180,
+        [COLUMN_TYPES.URL]: 200,
+        [COLUMN_TYPES.EMAIL]: 200,
+        [COLUMN_TYPES.DATE]: 160,
+        [COLUMN_TYPES.NUMBER]: 140,
+        [COLUMN_TYPES.BOOLEAN]: 100,
+        [COLUMN_TYPES.TEXT]: 180
+      };
+      
+      // Only set width if not already set
+      if (!updated[index].width) {
+        updated[index].width = typeWidths[value] || 180;
       }
     }
     

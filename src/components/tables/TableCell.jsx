@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { TextInput, Checkbox, Textarea } from 'flowbite-react';
+import { TextInput, Checkbox, Textarea, Button } from 'flowbite-react';
+import { Link as LinkIcon, ExternalLink } from 'lucide-react';
 import StatusBadge from '../common/StatusBadge';
+import LinksModal from './LinksModal';
 import { COLUMN_TYPES } from '../../utils/constants';
 import { formatDate } from '../../utils/helpers';
 
@@ -12,6 +14,9 @@ export default function TableCell({ column, value, onChange }) {
   const [editValue, setEditValue] = useState(value || '');
   const [tableOptions, setTableOptions] = useState([]);
   const [loadingOptions, setLoadingOptions] = useState(false);
+  
+  // Links modal state
+  const [showLinksModal, setShowLinksModal] = useState(false);
 
   // Fetch options from linked table if configured
   useEffect(() => {
@@ -68,6 +73,16 @@ export default function TableCell({ column, value, onChange }) {
       setEditValue(value || '');
       setIsEditing(false);
     }
+  };
+
+  // Links management handlers
+  const handleLinksChange = (updatedLinks) => {
+    onChange(updatedLinks);
+  };
+
+  const handleOpenLinksModal = (e) => {
+    e.stopPropagation();
+    setShowLinksModal(true);
   };
 
   // Render based on column type
@@ -240,6 +255,72 @@ export default function TableCell({ column, value, onChange }) {
           <span className="text-gray-400">No content</span>
         );
       
+      case COLUMN_TYPES.LINKS:
+        const links = Array.isArray(value) ? value : [];
+        const normalizedLinks = links.map(link => 
+          typeof link === 'string' ? { url: link, label: '' } : link
+        );
+        
+        return (
+          <div onClick={(e) => e.stopPropagation()} className="space-y-1.5">
+            {normalizedLinks.length > 0 ? (
+              <>
+                {/* Show first 2 links with compact design */}
+                <div className="space-y-1">
+                  {normalizedLinks.slice(0, 2).map((link, index) => (
+                    <a
+                      key={index}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1.5 text-sm group"
+                      onClick={(e) => e.stopPropagation()}
+                      title={link.url}
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-60 group-hover:opacity-100" />
+                      <span className="truncate max-w-[200px] font-medium">
+                        {link.label || link.url}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+                {normalizedLinks.length > 2 && (
+                  <div className="text-xs text-gray-500 pl-5">
+                    +{normalizedLinks.length - 2} more link{normalizedLinks.length - 2 > 1 ? 's' : ''}
+                  </div>
+                )}
+                <Button
+                  size="xs"
+                  color="light"
+                  onClick={handleOpenLinksModal}
+                  className="w-full"
+                >
+                  <LinkIcon className="w-3 h-3 mr-1.5" />
+                  Manage ({normalizedLinks.length})
+                </Button>
+              </>
+            ) : (
+              <Button
+                size="xs"
+                color="light"
+                onClick={handleOpenLinksModal}
+                className="w-full"
+              >
+                <LinkIcon className="w-3 h-3 mr-1.5" />
+                Add Links
+              </Button>
+            )}
+            
+            {/* Links Modal */}
+            <LinksModal
+              isOpen={showLinksModal}
+              onClose={() => setShowLinksModal(false)}
+              links={normalizedLinks}
+              onChange={handleLinksChange}
+            />
+          </div>
+        );
+      
       default:
         return value ? (
           <span className="break-words whitespace-pre-wrap">{value}</span>
@@ -252,7 +333,10 @@ export default function TableCell({ column, value, onChange }) {
   return (
     <div
       className="table-cell-editable min-h-[36px] px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors"
-      onClick={() => !isEditing && column.type !== COLUMN_TYPES.BOOLEAN && setIsEditing(true)}
+      onClick={() => {
+        if (column.type === COLUMN_TYPES.BOOLEAN || column.type === COLUMN_TYPES.LINKS) return;
+        if (!isEditing) setIsEditing(true);
+      }}
     >
       {renderCellContent()}
     </div>

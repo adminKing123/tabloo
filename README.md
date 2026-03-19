@@ -155,6 +155,23 @@ tabloo/
 3. Data saves automatically
 4. Use search to filter records
 
+### Managing Link Lists
+When using a **Link List** column:
+1. Click the **"Add Links"** or **"Manage Links"** button in the cell
+2. A modal popup will open with all your links
+3. **To add a link:**
+   - Enter the URL in the "Add New Link" section
+   - Optionally add a label/title for the link
+   - Click **"Add Link"** or press **Enter**
+4. **To edit a link:**
+   - Click the edit icon next to any link
+   - Update the URL and/or label
+   - Click **"Save"**
+5. **To delete a link:**
+   - Click the **X** button next to any link
+6. Click **"Save Changes"** to apply all changes
+7. Links are displayed in the cell with clickable icons to open them directly
+
 ## Column Types Reference
 
 | Type | Description | Use Case |
@@ -169,6 +186,7 @@ tabloo/
 | Tags | Multiple selections | Labels, categories |
 | Email | Email address with validation | Contact emails |
 | URL | Web link with validation | External links, resources |
+| Link List | Manage multiple labeled URLs | Bookmarks, references, resource collections |
 | API Dropdown | Options from API | Dynamic data from external source |
 | Calculated | Computed field | Formulas, calculations |
 | Nested Table | Table within a record | Sub-tasks, line items |
