@@ -11,6 +11,7 @@ A fully functional web application for organizing projects, managing data with c
 - **Multiple Column Types**: Text, Number, Date, Status, Dropdown, Boolean, Email, URL, and more
 - **Template System**: Pre-built templates for common use cases (Project Management, CRM, Bug Tracker, etc.)
 - **Local Storage**: All data stored locally using IndexedDB
+- **Export/Import**: Backup and restore your entire database as JSON
 - **Responsive UI**: Works on desktop and mobile devices
 
 ### 📊 Table Features
@@ -155,6 +156,27 @@ tabloo/
 3. Data saves automatically
 4. Use search to filter records
 
+### Exporting and Importing Data
+
+**To Export Your Database:**
+1. Go to the Workspace page (home page)
+2. Click the **"Export Database"** button in the top right
+3. A JSON file will automatically download to your computer
+4. Store this file safely as a backup
+
+**To Import a Database:**
+1. Go to the Workspace page
+2. Click the **"Import Database"** button
+3. Select your previously exported JSON file
+4. Confirm the import (this will replace all existing data)
+5. Wait for the success message and page reload
+
+**Important Notes:**
+- Importing will **completely replace** all existing data
+- Always export first if you want to keep your current data
+- The exported file contains all projects, tables, records, columns, and settings
+- You can use this to transfer data between browsers or devices
+
 ### Managing Link Lists
 When using a **Link List** column:
 1. **Viewing links**: All links are displayed directly in the cell as clickable items
@@ -199,7 +221,24 @@ When using a **Link List** column:
 
 ## Local Storage
 
-All data is stored locally in your browser using IndexedDB. Data persists across sessions but is specific to the browser and device. To backup data, use the export feature (if implemented) or browser DevTools.
+All data is stored locally in your browser using IndexedDB. Data persists across sessions but is specific to the browser and device.
+
+### Backup & Restore
+
+To protect your data, you can export and import your entire database:
+
+1. **Export Database**:
+   - Click the **"Export Database"** button on the Workspace page (top right)
+   - A JSON file will be downloaded with all your projects, tables, records, and settings
+   - File name format: `tabloo-backup-YYYY-MM-DD.json`
+
+2. **Import Database**:
+   - Click the **"Import Database"** button on the Workspace page
+   - Select a previously exported JSON file
+   - **WARNING**: This will replace ALL existing data
+   - The page will automatically reload after successful import
+
+**Recommendation**: Export your database regularly as a backup, especially before making major changes.
 
 ## Performance Notes
 
@@ -254,12 +293,12 @@ All data is stored locally in your browser using IndexedDB. Data persists across
 ## Contributing
 
 This is a production-ready application. Future enhancements could include:
-- Export/Import functionality
 - Advanced formulas and calculations
 - Rich text editing
 - File attachments
 - Advanced filtering and sorting
 - Chart visualizations
+- Cloud sync and multi-device support
 - Template marketplace
 
 ## License

@@ -423,3 +423,119 @@ export const updateGlobalField = async (id, updates) => {
 export const deleteGlobalField = async (id) => {
   await deleteItem(STORES.GLOBAL_FIELDS, id);
 };
+
+/**
+ * Export/Import Database
+ */
+
+// Export entire database as JSON
+export const exportDatabase = async () => {
+  const db = await initDB();
+  const data = {};
+
+  // Export all stores
+  for (const storeName of Object.values(STORES)) {
+    try {
+      data[storeName] = await db.getAll(storeName);
+    } catch (error) {
+      console.error(`Error exporting ${storeName}:`, error);
+      data[storeName] = [];
+    }
+  }
+
+  // Add metadata
+  data._metadata = {
+    exportedAt: new Date().toISOString(),
+    version: DB_VERSION,
+    dbName: DB_NAME
+  };
+
+  return data;
+};
+
+// Import database from JSON
+export const importDatabase = async (jsonData) => {
+  const db = await initDB();
+
+  // Validate data
+  if (!jsonData || typeof jsonData !== 'object') {
+    throw new Error('Invalid import data');
+  }
+
+  // Clear all existing data
+  for (const storeName of Object.values(STORES)) {
+    try {
+      await db.clear(storeName);
+    } catch (error) {
+      console.error(`Error clearing ${storeName}:`, error);
+    }
+  }
+
+  // Import data for each store
+  for (const storeName of Object.values(STORES)) {
+    const storeData = jsonData[storeName];
+    if (Array.isArray(storeData)) {
+      try {
+        const tx = db.transaction(storeName, 'readwrite');
+        const store = tx.objectStore(storeName);
+        
+        for (const item of storeData) {
+          await store.add(item);
+        }
+        
+        await tx.done;
+      } catch (error) {
+        console.error(`Error importing ${storeName}:`, error);
+        throw error;
+      }
+    }
+  }
+
+  return true;
+};
+
+// Download database as JSON file
+export const downloadDatabaseJSON = async () => {
+  try {
+    const data = await exportDatabase();
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `tabloo-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    return true;
+  } catch (error) {
+    console.error('Error downloading database:', error);
+    throw error;
+  }
+};
+
+// Upload and import database from JSON file
+export const uploadDatabaseJSON = async (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = async (event) => {
+      try {
+        const jsonData = JSON.parse(event.target.result);
+        await importDatabase(jsonData);
+        resolve(true);
+      } catch (error) {
+        reject(new Error('Failed to import database: ' + error.message));
+      }
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'));
+    };
+    
+    reader.readAsText(file);
+  });
+};

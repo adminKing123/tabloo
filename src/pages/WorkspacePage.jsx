@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button, TextInput, Dropdown, Tabs } from 'flowbite-react';
-import { Plus, Search, Folder, Database, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Folder, Database, MoreVertical, Edit, Trash2, Download, Upload } from 'lucide-react';
 import { useStore } from '../store/store';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
@@ -10,6 +10,7 @@ import TableCreateModal from '../components/tables/TableCreateModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorAlert from '../components/common/ErrorAlert';
 import { searchFilter } from '../utils/helpers';
+import { downloadDatabaseJSON, uploadDatabaseJSON } from '../services/indexedDB';
 
 /**
  * Workspace Page - Main landing page showing all projects
@@ -39,6 +40,7 @@ export default function WorkspacePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('updatedAt');
   const [activeTab, setActiveTab] = useState(0);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     loadProjects();
@@ -127,6 +129,51 @@ export default function WorkspacePage() {
     }
   };
 
+  // Export/Import handlers
+  const handleExportDatabase = async () => {
+    try {
+      await downloadDatabaseJSON();
+      alert('Database exported successfully!');
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export database. Please try again.');
+    }
+  };
+
+  const handleImportDatabase = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.json')) {
+      alert('Please select a JSON file');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      'WARNING: Importing will replace ALL existing data. Make sure you have a backup. Continue?'
+    );
+
+    if (!confirmed) {
+      event.target.value = ''; // Reset file input
+      return;
+    }
+
+    try {
+      await uploadDatabaseJSON(file);
+      alert('Database imported successfully! The page will now reload.');
+      window.location.reload(); // Reload to refresh all data
+    } catch (error) {
+      console.error('Import failed:', error);
+      alert('Failed to import database: ' + error.message);
+    } finally {
+      event.target.value = ''; // Reset file input
+    }
+  };
+
   // Filter and sort projects
   const filteredProjects = searchFilter(projects, searchTerm, ['name', 'description']);
   const sortedProjects = [...filteredProjects].sort((a, b) => {
@@ -158,10 +205,30 @@ export default function WorkspacePage() {
               }
             </p>
           </div>
-          <Button onClick={activeTab === 0 ? handleCreate : handleCreateGlobalTable}>
-            <Plus className="w-5 h-5 mr-2" />
-            {activeTab === 0 ? 'New Project' : 'New Global Table'}
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Export/Import Buttons */}
+            <Button color="light" onClick={handleExportDatabase}>
+              <Download className="w-4 h-4 mr-2" />
+              Export Database
+            </Button>
+            <Button color="light" onClick={handleImportDatabase}>
+              <Upload className="w-4 h-4 mr-2" />
+              Import Database
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            
+            {/* New Project/Table Button */}
+            <Button onClick={activeTab === 0 ? handleCreate : handleCreateGlobalTable}>
+              <Plus className="w-5 h-5 mr-2" />
+              {activeTab === 0 ? 'New Project' : 'New Global Table'}
+            </Button>
+          </div>
         </div>
 
         {/* Error Alert */}
