@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { TextInput, Checkbox, Textarea, Button } from 'flowbite-react';
 import { Link as LinkIcon, ExternalLink, Settings } from 'lucide-react';
 import StatusBadge from '../common/StatusBadge';
+import DateDisplay from '../common/DateDisplay';
 import LinksModal from './LinksModal';
 import { COLUMN_TYPES } from '../../utils/constants';
-import { formatDate } from '../../utils/helpers';
 
 /**
  * Table Cell Component with inline editing
@@ -224,11 +224,7 @@ export default function TableCell({ column, value, onChange }) {
         return <span className="text-gray-400">Not selected</span>;
       
       case COLUMN_TYPES.DATE:
-        return value ? (
-          <span>{formatDate(value)}</span>
-        ) : (
-          <span className="text-gray-400">No date</span>
-        );
+        return <DateDisplay date={value} compact={true} />;
       
       case COLUMN_TYPES.URL:
         return value ? (

@@ -9,6 +9,8 @@ import SectionFormModal from '../components/sections/SectionFormModal';
 import TableCreateModal from '../components/tables/TableCreateModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorAlert from '../components/common/ErrorAlert';
+import StatusBadge from '../components/common/StatusBadge';
+import DateDisplay from '../components/common/DateDisplay';
 import { formatDateTime } from '../utils/helpers';
 import { COLUMN_TYPES } from '../utils/constants';
 
@@ -181,17 +183,23 @@ export default function RecordPage() {
         );
 
       case COLUMN_TYPES.STATUS:
-        if (typeof value === 'object' && value.label) {
-          return (
-            <Badge
-              color="info"
-              style={{ backgroundColor: value.color || '#6B7280' }}
-            >
-              {value.label}
-            </Badge>
-          );
+        // Look up the color from column options
+        const statusOption = column.options?.find(opt => opt.label === value);
+        return <StatusBadge label={value} color={statusOption?.color} />;
+
+      case COLUMN_TYPES.DROPDOWN:
+        // Look up the color from column options (if available)
+        const dropdownOption = column.options?.find(opt => {
+          // Support both string options and object options
+          if (typeof opt === 'string') return opt === value;
+          return opt.label === value;
+        });
+        const dropdownColor = typeof dropdownOption === 'object' ? dropdownOption.color : undefined;
+        
+        if (dropdownColor) {
+          return <StatusBadge label={value} color={dropdownColor} />;
         }
-        return <span>{value}</span>;
+        return <Badge color="gray">{value}</Badge>;
 
       case COLUMN_TYPES.BOOLEAN:
         return (
@@ -224,7 +232,7 @@ export default function RecordPage() {
         );
 
       case COLUMN_TYPES.DATE:
-        return <span>{formatDateTime(value)}</span>;
+        return <DateDisplay date={value} compact={false} showTime={false} />;
 
       case COLUMN_TYPES.JSON:
         if (typeof value === 'object') {
@@ -260,7 +268,7 @@ export default function RecordPage() {
     <Layout>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-start gap-4 mb-6">
           <Button
             color="light"
             onClick={() => navigate(-1)}
@@ -297,12 +305,12 @@ export default function RecordPage() {
               <p className="text-gray-900 font-mono text-sm">{currentRecord.id}</p>
             </div>
             <div>
-              <span className="text-sm font-medium text-gray-500">Created</span>
-              <p className="text-gray-900">{formatDateTime(currentRecord.createdAt)}</p>
+              <span className="text-sm font-medium text-gray-500 mb-2 block">Created</span>
+              <DateDisplay date={currentRecord.createdAt} compact={false} showTime={true} />
             </div>
             <div>
-              <span className="text-sm font-medium text-gray-500">Last Updated</span>
-              <p className="text-gray-900">{formatDateTime(currentRecord.updatedAt)}</p>
+              <span className="text-sm font-medium text-gray-500 mb-2 block">Last Updated</span>
+              <DateDisplay date={currentRecord.updatedAt} compact={false} showTime={true} />
             </div>
           </div>
 
