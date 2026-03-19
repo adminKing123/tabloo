@@ -350,7 +350,7 @@ export default function TablePage() {
             </Button>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white -mx-6 overflow-hidden">
             <TableView
               columns={columns}
               records={finalFilteredRecords}

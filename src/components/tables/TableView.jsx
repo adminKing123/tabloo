@@ -448,7 +448,7 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 </div>
                 {/* Resize handle */}
                 <div
-                  className="absolute top-0 right-0 w-4 h-full cursor-col-resize flex items-center justify-center group hover:bg-blue-50"
+                  className="absolute top-0 -right-2 w-4 h-full cursor-col-resize flex items-center justify-center group hover:bg-blue-50"
                   onMouseDown={(e) => handleResizeMouseDown(e, column)}
                   onClick={(e) => e.stopPropagation()}
                   style={{ zIndex: 20 }}
