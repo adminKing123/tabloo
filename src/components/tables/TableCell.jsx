@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TextInput, Checkbox, Textarea, Button } from 'flowbite-react';
-import { Link as LinkIcon, ExternalLink } from 'lucide-react';
+import { Link as LinkIcon, ExternalLink, Settings } from 'lucide-react';
 import StatusBadge from '../common/StatusBadge';
 import LinksModal from './LinksModal';
 import { COLUMN_TYPES } from '../../utils/constants';
@@ -262,53 +262,44 @@ export default function TableCell({ column, value, onChange }) {
         );
         
         return (
-          <div onClick={(e) => e.stopPropagation()} className="space-y-1.5">
+          <div onClick={(e) => e.stopPropagation()} className="group/links">
             {normalizedLinks.length > 0 ? (
-              <>
-                {/* Show first 2 links with compact design */}
-                <div className="space-y-1">
-                  {normalizedLinks.slice(0, 2).map((link, index) => (
+              <div className="space-y-1">
+                {/* Show all links in a compact list */}
+                {normalizedLinks.map((link, index) => (
+                  <div key={index} className="flex items-center gap-1.5">
                     <a
-                      key={index}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1.5 text-sm group"
+                      className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 text-sm flex-1 min-w-0"
                       onClick={(e) => e.stopPropagation()}
                       title={link.url}
                     >
-                      <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-60 group-hover:opacity-100" />
-                      <span className="truncate max-w-[200px] font-medium">
+                      <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-50" />
+                      <span className="truncate font-medium">
                         {link.label || link.url}
                       </span>
                     </a>
-                  ))}
-                </div>
-                {normalizedLinks.length > 2 && (
-                  <div className="text-xs text-gray-500 pl-5">
-                    +{normalizedLinks.length - 2} more link{normalizedLinks.length - 2 > 1 ? 's' : ''}
                   </div>
-                )}
-                <Button
-                  size="xs"
-                  color="light"
+                ))}
+                {/* Manage button - appears on hover */}
+                <button
                   onClick={handleOpenLinksModal}
-                  className="w-full"
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-all opacity-0 group-hover/links:opacity-100 mt-1"
                 >
-                  <LinkIcon className="w-3 h-3 mr-1.5" />
-                  Manage ({normalizedLinks.length})
-                </Button>
-              </>
+                  <Settings className="w-3 h-3" />
+                  <span>Manage {normalizedLinks.length} link{normalizedLinks.length > 1 ? 's' : ''}</span>
+                </button>
+              </div>
             ) : (
-              <Button
-                size="xs"
-                color="light"
+              <button
                 onClick={handleOpenLinksModal}
-                className="w-full"
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-600 transition-colors py-1"
               >
-                <LinkIcon className="w-3 h-3 mr-1.5" />
-                Add Links
-              </Button>
+                <LinkIcon className="w-3.5 h-3.5" />
+                <span>Add links</span>
+              </button>
             )}
             
             {/* Links Modal */}

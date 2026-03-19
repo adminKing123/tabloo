@@ -157,20 +157,18 @@ tabloo/
 
 ### Managing Link Lists
 When using a **Link List** column:
-1. Click the **"Add Links"** or **"Manage Links"** button in the cell
-2. A modal popup will open with all your links
-3. **To add a link:**
+1. **Viewing links**: All links are displayed directly in the cell as clickable items
+2. **Adding/editing links**: 
+   - Hover over the cell to reveal the **"Manage"** button
+   - Or click **"Add links"** if no links exist yet
+3. **In the management modal**:
    - Enter the URL in the "Add New Link" section
    - Optionally add a label/title for the link
    - Click **"Add Link"** or press **Enter**
-4. **To edit a link:**
-   - Click the edit icon next to any link
-   - Update the URL and/or label
-   - Click **"Save"**
-5. **To delete a link:**
-   - Click the **X** button next to any link
+4. **To edit a link**: Click the edit icon next to any link in the modal
+5. **To delete a link**: Click the **X** button next to any link
 6. Click **"Save Changes"** to apply all changes
-7. Links are displayed in the cell with clickable icons to open them directly
+7. All links open in a new tab when clicked
 
 ## Column Types Reference
 
