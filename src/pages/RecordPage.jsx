@@ -402,8 +402,8 @@ export default function RecordPage() {
               <Section
                 key={section.id}
                 section={section}
-                tables={getSectionTables(section.id)}
-                childSections={getChildSections(section.id)}
+                allTables={tables}
+                allSections={sections}
                 onAddTable={handleCreateTable}
                 onAddSection={handleCreateSection}
                 onEdit={handleEditSection}

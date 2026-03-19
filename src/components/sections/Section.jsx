@@ -7,8 +7,8 @@ import { ChevronDown, ChevronRight, Plus, MoreVertical, Edit, Trash2, Table as T
  */
 export default function Section({ 
   section, 
-  tables = [], 
-  childSections = [],
+  allTables = [],
+  allSections = [],
   onAddTable,
   onAddSection,
   onEdit,
@@ -18,6 +18,9 @@ export default function Section({
   onDeleteTable,
   depth = 0
 }) {
+  // Filter tables and sections for this specific section
+  const tables = allTables.filter(t => t.sectionId === section.id);
+  const childSections = allSections.filter(s => s.parentId === section.id);
   const [isExpanded, setIsExpanded] = useState(true);
 
   const paddingLeft = depth * 24;
@@ -139,8 +142,8 @@ export default function Section({
             <Section
               key={childSection.id}
               section={childSection}
-              tables={tables}
-              childSections={childSections}
+              allTables={allTables}
+              allSections={allSections}
               onAddTable={onAddTable}
               onAddSection={onAddSection}
               onEdit={onEdit}
