@@ -1,5 +1,5 @@
 import { Button } from 'flowbite-react';
-import { Plus, Trash2, ExternalLink, GripVertical, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { Trash2, ExternalLink, GripVertical, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import TableCell from './TableCell';
@@ -8,7 +8,7 @@ import { truncate } from '../../utils/helpers';
 /**
  * Table View Component - Display data in table format
  */
-export default function TableView({ columns, records, onUpdateRecord, onDeleteRecord, onAddRecord, onUpdateColumns, onUpdateRecords, table, onUpdateTable }) {
+export default function TableView({ columns, records, onUpdateRecord, onDeleteRecord, onAddRecord, onUpdateColumns, onUpdateRecords, table, onUpdateTable, recentlyAddedRecordId }) {
   const navigate = useNavigate();
   const { projectId, tableId } = useParams();
   const [draggedColumnIndex, setDraggedColumnIndex] = useState(null);
@@ -366,15 +366,27 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
   };
 
   return (
-    <div className="overflow-x-auto" style={{ maxWidth: '100%' }}>
-      <table className="border-collapse bg-white" style={{ tableLayout: 'fixed', width: 'max-content' }}>
+    <div className="flex flex-col">
+      {/* Table */}
+      <div className="overflow-x-auto" style={{ maxWidth: '100%' }}>
+        <table className="border-collapse bg-white" style={{ tableLayout: 'fixed', width: 'max-content' }}>
         <thead>
           <tr className="bg-gray-50 border-b-2 border-gray-200">
-            <th className="text-left px-4 py-3 font-semibold text-gray-900" style={{ width: '50px', minWidth: '50px' }}>
-              <GripVertical className="w-4 h-4 text-gray-400" />
+            {/* Row reorder handle - Fixed system column */}
+            <th 
+              className="text-center px-2 py-3 bg-gray-100" 
+              style={{ width: '40px', minWidth: '40px' }}
+              title="Drag to reorder records"
+            >
+              
             </th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-900" style={{ width: '150px', minWidth: '150px' }}>
-              Record ID
+            {/* Record details link - Fixed system column */}
+            <th 
+              className="text-center px-2 py-3 bg-gray-100" 
+              style={{ width: '40px', minWidth: '40px' }}
+              title="Record details"
+            >
+              
             </th>
             {visibleColumns.map((column, index) => (
               <th
@@ -449,7 +461,9 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
           </tr>
         </thead>
         <tbody>
-          {sortedRecords.map((record) => (
+          {sortedRecords.map((record) => {
+            const isRecentlyAdded = record.id === recentlyAddedRecordId;
+            return (
             <tr 
               key={record.id} 
               draggable
@@ -458,20 +472,26 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
               onDragLeave={handleRecordDragLeave}
               onDrop={(e) => handleRecordDrop(e, record.id)}
               onDragEnd={handleRecordDragEnd}
-              className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${
+              className={`border-b border-gray-200 transition-all duration-500 ${
                 draggedRecordId === record.id ? 'opacity-50' : ''
+              } ${
+                isRecentlyAdded 
+                  ? 'bg-blue-50 ring-2 ring-blue-400 ring-inset animate-pulse' 
+                  : 'hover:bg-gray-50'
               }`}
             >
-              <td className="px-4 py-2 text-center cursor-move" style={{ width: '50px' }}>
+              {/* Row reorder handle */}
+              <td className="px-2 py-2 text-center cursor-move bg-gray-50" style={{ width: '40px' }}>
                 <GripVertical className="w-4 h-4 text-gray-400 mx-auto" />
               </td>
-              <td className="px-4 py-2 border-r border-gray-100" style={{ width: '150px' }}>
+              {/* Record details link */}
+              <td className="px-1 py-2 text-center bg-gray-50" style={{ width: '40px' }}>
                 <button
                   onClick={() => navigate(`/project/${projectId}/table/${tableId}/record/${record.id}`)}
-                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-mono text-sm hover:underline"
+                  className="p-1.5 rounded hover:bg-gray-200 text-gray-400 hover:text-blue-600 transition-colors"
+                  title={`Open record ${record.id}`}
                 >
-                  <ExternalLink className="w-3 h-3" />
-                  {truncate(record.id, 12)}
+                  <ExternalLink className="w-4 h-4" />
                 </button>
               </td>
               {visibleColumns.map((column) => (
@@ -501,30 +521,30 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 </Button>
               </td>
             </tr>
-          ))}
+            );
+          })}
           
           {sortedRecords.length === 0 && (
             <tr>
               <td
                 colSpan={visibleColumns.length + 3}
-                className="px-4 py-8 text-center text-gray-500"
+                className="px-4 py-12 text-center"
               >
-                No records yet. Click "Add Record" to create one.
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-gray-500">No records yet</p>
+                  <Button
+                    size="sm"
+                    onClick={onAddRecord}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add First Record
+                  </Button>
+                </div>
               </td>
             </tr>
           )}
         </tbody>
       </table>
-
-      <div className="p-4 border-t border-gray-200">
-        <Button
-          size="sm"
-          color="light"
-          onClick={onAddRecord}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Record
-        </Button>
       </div>
     </div>
   );

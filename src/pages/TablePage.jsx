@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, TextInput, Dropdown, Badge } from 'flowbite-react';
-import { ChevronLeft, Settings, Search, Filter, ClipboardList, MoreVertical, Trash2, Edit } from 'lucide-react';
+import { ChevronLeft, Settings, Search, Filter, ClipboardList, MoreVertical, Trash2, Edit, Plus } from 'lucide-react';
 import { useStore } from '../store/store';
 import Layout from '../components/layout/Layout';
 import TableView from '../components/tables/TableView';
@@ -44,6 +44,7 @@ export default function TablePage() {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterConfig, setFilterConfig] = useState({ filters: [], logic: 'AND' });
+  const [recentlyAddedRecordId, setRecentlyAddedRecordId] = useState(null);
 
   useEffect(() => {
     setCurrentTable(tableId);
@@ -64,17 +65,29 @@ export default function TablePage() {
       emptyData[col.id] = '';
     });
 
-    // Calculate the order for the new record (highest order + 1)
-    const maxOrder = records.reduce((max, record) => {
-      return Math.max(max, record.order || 0);
-    }, -1);
-
     try {
-      await createRecord({
+      // Add new record at the TOP (order 0)
+      const newRecord = await createRecord({
         tableId,
         data: emptyData,
-        order: maxOrder + 1
+        order: 0
       });
+      
+      // Shift all existing records down by updating their order
+      const updatedRecords = records.map(record => ({
+        ...record,
+        order: (record.order || 0) + 1
+      }));
+      
+      if (updatedRecords.length > 0) {
+        await updateRecords(updatedRecords);
+      }
+      
+      // Highlight the new record for 3 seconds
+      if (newRecord?.id) {
+        setRecentlyAddedRecordId(newRecord.id);
+        setTimeout(() => setRecentlyAddedRecordId(null), 3000);
+      }
     } catch (error) {
       console.error('Failed to create record:', error);
     }
@@ -258,8 +271,8 @@ export default function TablePage() {
         {/* Error Alert */}
         {error && <ErrorAlert message={error} onClose={clearError} />}
 
-        {/* Search and Filter Bar */}
-        <div className="flex gap-4 mb-4">
+        {/* Search, Filter, and Add Record Bar */}
+        <div className="flex items-center gap-3 mb-4">
           <div className="flex-1">
             <TextInput
               icon={Search}
@@ -269,7 +282,7 @@ export default function TablePage() {
             />
           </div>
           {columns.length > 0 && (
-            <div className="flex gap-2">
+            <>
               <Button
                 color={filterConfig.filters.length > 0 ? "info" : "light"}
                 onClick={() => setShowFilterModal(true)}
@@ -285,13 +298,18 @@ export default function TablePage() {
               {filterConfig.filters.length > 0 && (
                 <Button
                   color="gray"
-                  size="sm"
                   onClick={handleClearFilters}
                 >
                   Clear Filters
                 </Button>
               )}
-            </div>
+              <Button
+                onClick={handleAddRecord}
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add Record
+              </Button>
+            </>
           )}
         </div>
 
@@ -343,6 +361,7 @@ export default function TablePage() {
               onUpdateRecords={updateRecords}
               table={currentTable}
               onUpdateTable={updateTable}
+              recentlyAddedRecordId={recentlyAddedRecordId}
             />
           </div>
         )}
