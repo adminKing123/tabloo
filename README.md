@@ -1,4 +1,4 @@
-# Tabloo - Flexible Project Workspace
+# Tabloo
 
 A fully functional web application for organizing projects, managing data with customizable tables, and creating structured workflows. Built with React, Vite, Flowbite, and IndexedDB for local-first data persistence.
 
