@@ -268,7 +268,7 @@ export default function RecordPage() {
     <Layout>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-start gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-6">
           <Button
             color="light"
             onClick={() => navigate(-1)}
@@ -276,13 +276,15 @@ export default function RecordPage() {
             <ChevronLeft className="w-5 h-5" />
           </Button>
           <div className="flex-1">
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-              <span>{currentTable.name}</span>
+            <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+              <span className="hover:text-gray-700 cursor-pointer" onClick={() => navigate(-1)}>
+                {currentTable.name}
+              </span>
               <span>›</span>
-              <span>Record Details</span>
+              <span className="text-gray-700 font-medium">Record Details</span>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Record: {currentRecord.id.substring(0, 8)}...
+            <h1 className="text-2xl font-bold text-gray-900">
+              {currentRecord.id.substring(0, 12)}...
             </h1>
           </div>
         </div>
@@ -290,64 +292,73 @@ export default function RecordPage() {
         {/* Error Alert */}
         {error && <ErrorAlert message={error} onClose={clearError} />}
 
-        {/* Record Data Card */}
-        <Card className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <Info className="w-5 h-5" />
-              Record Information
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <span className="text-sm font-medium text-gray-500">Record ID</span>
-              <p className="text-gray-900 font-mono text-sm">{currentRecord.id}</p>
+        {/* Record Metadata */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
+              <Info className="w-4 h-4 text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">ID:</span>
+              <span className="text-xs font-mono text-gray-900">{currentRecord.id.substring(0, 12)}...</span>
             </div>
-            <div>
-              <span className="text-sm font-medium text-gray-500 mb-2 block">Created</span>
-              <DateDisplay date={currentRecord.createdAt} compact={false} showTime={true} />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-500">Created:</span>
+              <DateDisplay date={currentRecord.createdAt} compact={true} showTime={false} />
             </div>
-            <div>
-              <span className="text-sm font-medium text-gray-500 mb-2 block">Last Updated</span>
-              <DateDisplay date={currentRecord.updatedAt} compact={false} showTime={true} />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-500">Updated:</span>
+              <DateDisplay date={currentRecord.updatedAt} compact={true} showTime={false} />
             </div>
           </div>
+        </div>
 
-          {/* Display record data */}
-          {currentRecord.data && Object.keys(currentRecord.data).length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Field Values</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Record Data */}
+        {currentRecord.data && Object.keys(currentRecord.data).length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div className="border-b border-gray-200 px-6 py-4">
+              <h2 className="text-lg font-semibold text-gray-900">Field Data</h2>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {columns.map((column) => (
-                  <div key={column.id} className="flex flex-col gap-1">
-                    <span className="text-sm font-medium text-gray-500">{column.name}</span>
-                    <div className="text-gray-900">
+                  <div key={column.id} className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-gray-700">{column.name}</span>
+                      {column.required && (
+                        <span className="text-red-500 text-xs">*</span>
+                      )}
+                      <span className="text-xs text-gray-400 uppercase">{column.type}</span>
+                    </div>
+                    <div className="pl-0">
                       {renderFieldValue(column, currentRecord.data[column.id])}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          )}
-        </Card>
+          </div>
+        )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-3 mb-6">
-          <Button onClick={() => handleCreateSection()}>
-            <Plus className="w-5 h-5 mr-2" />
-            New Section
-          </Button>
-          <Button color="light" onClick={() => handleCreateTable()}>
-            <TableIcon className="w-5 h-5 mr-2" />
-            New Table
-          </Button>
+        {/* Add Nested Content */}
+        <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Add Nested Content</h3>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={() => handleCreateSection()} size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              New Section
+            </Button>
+            <Button color="light" onClick={() => handleCreateTable()} size="sm">
+              <TableIcon className="w-4 h-4 mr-2" />
+              New Table
+            </Button>
+          </div>
         </div>
 
         {/* Root Tables */}
         {rootTables.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Nested Tables</h3>
+            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Nested Tables</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {rootTables.map((table) => (
                 <div
@@ -386,7 +397,7 @@ export default function RecordPage() {
         {/* Sections */}
         {rootSections.length > 0 ? (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Nested Sections</h3>
+            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Nested Sections</h3>
             {rootSections.map((section) => (
               <Section
                 key={section.id}
