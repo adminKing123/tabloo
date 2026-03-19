@@ -15,6 +15,12 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
   const [draggedRecordId, setDraggedRecordId] = useState(null);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
+  
+  // Column resizing state
+  const [resizingColumn, setResizingColumn] = useState(null);
+  const [resizeStartX, setResizeStartX] = useState(0);
+  const [resizeStartWidth, setResizeStartWidth] = useState(0);
+  const [tempColumnWidths, setTempColumnWidths] = useState({});
 
   // Load sort state from table when it changes or loads
   useEffect(() => {
@@ -237,15 +243,90 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
     }
   };
 
+  // Column resize handlers
+  const handleResizeMouseDown = (e, column) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setResizingColumn(column.id);
+    setResizeStartX(e.clientX);
+    setResizeStartWidth(column.width || 200);
+    
+    // Prevent text selection during resize
+    document.body.style.userSelect = 'none';
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!resizingColumn) return;
+      
+      const diff = e.clientX - resizeStartX;
+      const newWidth = Math.max(100, resizeStartWidth + diff); // Min width 100px
+      
+      // Update temporary width for instant visual feedback
+      setTempColumnWidths(prev => ({
+        ...prev,
+        [resizingColumn]: newWidth
+      }));
+    };
+
+    const handleMouseUp = async () => {
+      if (!resizingColumn) return;
+      
+      // Restore text selection
+      document.body.style.userSelect = '';
+      
+      // Get the final width from temp state
+      const finalWidth = tempColumnWidths[resizingColumn] || resizeStartWidth;
+      
+      const updatedColumns = columns.map(col => 
+        col.id === resizingColumn ? { ...col, width: finalWidth } : col
+      );
+      
+      if (onUpdateColumns) {
+        try {
+          await onUpdateColumns(updatedColumns);
+        } catch (error) {
+          console.error('Failed to save column width:', error);
+        }
+      }
+      
+      // Clear temp widths and reset resize state
+      setTempColumnWidths({});
+      setResizingColumn(null);
+      setResizeStartX(0);
+      setResizeStartWidth(0);
+    };
+
+    if (resizingColumn) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [resizingColumn, resizeStartX, resizeStartWidth, tempColumnWidths, columns, onUpdateColumns]);
+
+  // Get column width with default, prioritizing temp width during resize
+  const getColumnWidth = (column) => {
+    // Use temp width if this column is being resized
+    if (tempColumnWidths[column.id] !== undefined) {
+      return tempColumnWidths[column.id];
+    }
+    return column.width || 200;
+  };
+
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse bg-white">
+    <div className="overflow-x-auto" style={{ maxWidth: '100%' }}>
+      <table className="border-collapse bg-white" style={{ tableLayout: 'fixed', width: 'max-content' }}>
         <thead>
           <tr className="bg-gray-50 border-b-2 border-gray-200">
-            <th className="text-left px-4 py-3 font-semibold text-gray-900 w-12">
+            <th className="text-left px-4 py-3 font-semibold text-gray-900" style={{ width: '50px', minWidth: '50px' }}>
               <GripVertical className="w-4 h-4 text-gray-400" />
             </th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-900 w-32">
+            <th className="text-left px-4 py-3 font-semibold text-gray-900" style={{ width: '150px', minWidth: '150px' }}>
               Record ID
             </th>
             {visibleColumns.map((column, index) => (
@@ -257,11 +338,17 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 onDragLeave={handleColumnDragLeave}
                 onDrop={(e) => handleColumnDrop(e, index)}
                 onDragEnd={handleColumnDragEnd}
-                className={`text-left px-4 py-3 font-semibold text-gray-900 min-w-[150px] transition-colors ${
+                style={{ 
+                  width: `${getColumnWidth(column)}px`,
+                  minWidth: `${getColumnWidth(column)}px`,
+                  maxWidth: `${getColumnWidth(column)}px`,
+                  position: 'relative'
+                }}
+                className={`text-left px-4 py-3 font-semibold text-gray-900 transition-colors ${
                   draggedColumnIndex === index ? 'opacity-50' : ''
                 }`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-hidden">
                   <div className="cursor-move flex-shrink-0">
                     <GripVertical className="w-4 h-4 text-gray-400" />
                   </div>
@@ -290,9 +377,18 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                     )}
                   </div>
                 </div>
+                {/* Resize handle */}
+                <div
+                  className="absolute top-0 right-0 w-4 h-full cursor-col-resize flex items-center justify-center group hover:bg-blue-50"
+                  onMouseDown={(e) => handleResizeMouseDown(e, column)}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ zIndex: 20 }}
+                >
+                  <div className="w-0.5 h-full bg-gray-300 group-hover:bg-blue-500 transition-colors"></div>
+                </div>
               </th>
             ))}
-            <th className="w-20 px-4 py-3"></th>
+            <th className="px-4 py-3" style={{ width: '80px', minWidth: '80px' }}></th>
           </tr>
         </thead>
         <tbody>
@@ -309,10 +405,10 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 draggedRecordId === record.id ? 'opacity-50' : ''
               }`}
             >
-              <td className="px-4 py-2 text-center cursor-move">
+              <td className="px-4 py-2 text-center cursor-move" style={{ width: '50px' }}>
                 <GripVertical className="w-4 h-4 text-gray-400 mx-auto" />
               </td>
-              <td className="px-4 py-2 border-r border-gray-100">
+              <td className="px-4 py-2 border-r border-gray-100" style={{ width: '150px' }}>
                 <button
                   onClick={() => navigate(`/project/${projectId}/table/${tableId}/record/${record.id}`)}
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-mono text-sm hover:underline"
@@ -322,7 +418,15 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 </button>
               </td>
               {visibleColumns.map((column) => (
-                <td key={column.id} className="border-r border-gray-100">
+                <td 
+                  key={column.id} 
+                  className="border-r border-gray-100"
+                  style={{ 
+                    width: `${getColumnWidth(column)}px`,
+                    maxWidth: `${getColumnWidth(column)}px`,
+                    overflow: 'hidden'
+                  }}
+                >
                   <TableCell
                     column={column}
                     value={record.data?.[column.id]}
@@ -330,7 +434,7 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                   />
                 </td>
               ))}
-              <td className="px-4 py-2 text-center">
+              <td className="px-4 py-2 text-center" style={{ width: '80px' }}>
                 <Button
                   size="xs"
                   color="failure"
