@@ -165,3 +165,151 @@ export const downloadJSON = (data, filename) => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
+
+/**
+ * Apply filters to records
+ */
+export const applyFilters = (records, filterConfig, columns) => {
+  if (!filterConfig || !filterConfig.filters || filterConfig.filters.length === 0) {
+    return records;
+  }
+
+  const { filters, logic } = filterConfig;
+
+  return records.filter(record => {
+    const results = filters.map(filter => {
+      const column = columns.find(c => c.id === filter.columnId);
+      if (!column) return false;
+
+      const value = record.data?.[filter.columnId];
+      return evaluateFilter(value, filter.operator, filter.value, column);
+    });
+
+    // Apply logic (AND/OR)
+    if (logic === 'AND') {
+      return results.every(r => r);
+    } else {
+      return results.some(r => r);
+    }
+  });
+};
+
+/**
+ * Evaluate a single filter condition
+ */
+const evaluateFilter = (value, operator, filterValue, column) => {
+  // Handle empty value checks
+  const isEmpty = value === undefined || value === null || value === '' || 
+    (Array.isArray(value) && value.length === 0);
+
+  switch (operator) {
+    case 'isEmpty':
+      return isEmpty;
+    
+    case 'isNotEmpty':
+      return !isEmpty;
+    
+    case 'isChecked':
+      return value === true || value === 'true';
+    
+    case 'isNotChecked':
+      return value !== true && value !== 'true';
+    
+    case 'contains':
+      if (isEmpty) return false;
+      if (Array.isArray(value)) {
+        return value.some(v => String(v).toLowerCase().includes(String(filterValue).toLowerCase()));
+      }
+      return String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+    
+    case 'notContains':
+      if (isEmpty) return true;
+      if (Array.isArray(value)) {
+        return !value.some(v => String(v).toLowerCase().includes(String(filterValue).toLowerCase()));
+      }
+      return !String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+    
+    case 'is':
+      if (column.type === 'date') {
+        const recordDate = value ? new Date(value).toISOString().split('T')[0] : '';
+        const filterDate = filterValue ? new Date(filterValue).toISOString().split('T')[0] : '';
+        return recordDate === filterDate;
+      }
+      return String(value).toLowerCase() === String(filterValue).toLowerCase();
+    
+    case 'isNot':
+      if (column.type === 'date') {
+        const recordDate = value ? new Date(value).toISOString().split('T')[0] : '';
+        const filterDate = filterValue ? new Date(filterValue).toISOString().split('T')[0] : '';
+        return recordDate !== filterDate;
+      }
+      return String(value).toLowerCase() !== String(filterValue).toLowerCase();
+    
+    case 'equals':
+      return parseFloat(value) === parseFloat(filterValue);
+    
+    case 'notEquals':
+      return parseFloat(value) !== parseFloat(filterValue);
+    
+    case 'greaterThan':
+      return parseFloat(value) > parseFloat(filterValue);
+    
+    case 'lessThan':
+      return parseFloat(value) < parseFloat(filterValue);
+    
+    case 'greaterThanOrEqual':
+      return parseFloat(value) >= parseFloat(filterValue);
+    
+    case 'lessThanOrEqual':
+      return parseFloat(value) <= parseFloat(filterValue);
+    
+    case 'isBefore':
+      if (isEmpty) return false;
+      return new Date(value) < new Date(filterValue);
+    
+    case 'isAfter':
+      if (isEmpty) return false;
+      return new Date(value) > new Date(filterValue);
+    
+    case 'isOnOrBefore':
+      if (isEmpty) return false;
+      return new Date(value) <= new Date(filterValue);
+    
+    case 'isOnOrAfter':
+      if (isEmpty) return false;
+      return new Date(value) >= new Date(filterValue);
+    
+    case 'isAnyOf':
+    case 'hasAnyOf': {
+      if (isEmpty) return false;
+      const filterValues = filterValue.split(',').map(v => v.trim().toLowerCase());
+      const recordValues = Array.isArray(value) 
+        ? value.map(v => String(v).toLowerCase())
+        : [String(value).toLowerCase()];
+      return recordValues.some(rv => filterValues.includes(rv));
+    }
+    
+    case 'isNoneOf':
+    case 'hasNoneOf': {
+      if (isEmpty) return true;
+      const filterValues = filterValue.split(',').map(v => v.trim().toLowerCase());
+      const recordValues = Array.isArray(value) 
+        ? value.map(v => String(v).toLowerCase())
+        : [String(value).toLowerCase()];
+      return !recordValues.some(rv => filterValues.includes(rv));
+    }
+    
+    case 'hasAllOf': {
+      if (isEmpty) return false;
+      const filterValues = filterValue.split(',').map(v => v.trim().toLowerCase());
+      const recordValues = Array.isArray(value) 
+        ? value.map(v => String(v).toLowerCase())
+        : [String(value).toLowerCase()];
+      return filterValues.every(fv => recordValues.includes(fv));
+    }
+    
+    default:
+      return false;
+  }
+};
+

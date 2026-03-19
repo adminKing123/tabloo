@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, TextInput, Dropdown } from 'flowbite-react';
+import { Button, TextInput, Dropdown, Badge } from 'flowbite-react';
 import { ChevronLeft, Settings, Search, Filter, ClipboardList, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { useStore } from '../store/store';
 import Layout from '../components/layout/Layout';
 import TableView from '../components/tables/TableView';
 import ColumnManagerModal from '../components/tables/ColumnManagerModal';
+import FilterModal from '../components/tables/FilterModal';
 import TableCreateModal from '../components/tables/TableCreateModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorAlert from '../components/common/ErrorAlert';
+import { applyFilters } from '../utils/helpers';
 
 /**
  * Table Page - View and manage table data
@@ -39,12 +41,22 @@ export default function TablePage() {
 
   const [showColumnManager, setShowColumnManager] = useState(false);
   const [showEditTable, setShowEditTable] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterColumn, setFilterColumn] = useState('');
+  const [filterConfig, setFilterConfig] = useState({ filters: [], logic: 'AND' });
 
   useEffect(() => {
     setCurrentTable(tableId);
   }, [tableId, setCurrentTable]);
+
+  // Load filter config from table
+  useEffect(() => {
+    if (currentTable?.filterConfig) {
+      setFilterConfig(currentTable.filterConfig);
+    } else {
+      setFilterConfig({ filters: [], logic: 'AND' });
+    }
+  }, [currentTable]);
 
   const handleAddRecord = async () => {
     const emptyData = {};
@@ -113,6 +125,37 @@ export default function TablePage() {
     }
   };
 
+  const handleSaveFilters = async (newFilterConfig) => {
+    setFilterConfig(newFilterConfig);
+    
+    // Persist to database
+    if (onUpdateTable && currentTable) {
+      try {
+        await updateTable(currentTable.id, {
+          filterConfig: newFilterConfig
+        });
+      } catch (error) {
+        console.error('Failed to save filters:', error);
+      }
+    }
+  };
+
+  const handleClearFilters = async () => {
+    const emptyConfig = { filters: [], logic: 'AND' };
+    setFilterConfig(emptyConfig);
+    
+    // Persist to database
+    if (currentTable) {
+      try {
+        await updateTable(currentTable.id, {
+          filterConfig: emptyConfig
+        });
+      } catch (error) {
+        console.error('Failed to clear filters:', error);
+      }
+    }
+  };
+
   // Filter records based on search
   const filteredRecords = records.filter(record => {
     if (!searchTerm) return true;
@@ -123,6 +166,9 @@ export default function TablePage() {
       return value?.toString().toLowerCase().includes(searchLower);
     });
   });
+
+  // Apply advanced filters
+  const finalFilteredRecords = applyFilters(filteredRecords, filterConfig, columns);
 
   if (loading && !currentTable) {
     return (
@@ -223,20 +269,52 @@ export default function TablePage() {
             />
           </div>
           {columns.length > 0 && (
-            <select
-              value={filterColumn}
-              onChange={(e) => setFilterColumn(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Columns</option>
-              {columns.map(col => (
-                <option key={col.id} value={col.id}>
-                  {col.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <Button
+                color={filterConfig.filters.length > 0 ? "info" : "light"}
+                onClick={() => setShowFilterModal(true)}
+              >
+                <Filter className="w-5 h-5 mr-2" />
+                Filters
+                {filterConfig.filters.length > 0 && (
+                  <Badge color="info" className="ml-2">
+                    {filterConfig.filters.length}
+                  </Badge>
+                )}
+              </Button>
+              {filterConfig.filters.length > 0 && (
+                <Button
+                  color="gray"
+                  size="sm"
+                  onClick={handleClearFilters}
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </div>
           )}
         </div>
+
+        {/* Active Filters Display */}
+        {filterConfig.filters.length > 0 && (
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-semibold text-blue-900">Active Filters ({filterConfig.logic}):</span>
+              {filterConfig.filters.map((filter, idx) => {
+                const column = columns.find(c => c.id === filter.columnId);
+                // Convert filter value to string, handling objects
+                const displayValue = filter.value ? 
+                  (typeof filter.value === 'object' ? JSON.stringify(filter.value) : String(filter.value)) 
+                  : '';
+                return (
+                  <Badge key={idx} color="info" size="sm">
+                    {column?.name}: {filter.operator} {displayValue && `"${displayValue}"`}
+                  </Badge>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Table Content */}
         {columns.length === 0 ? (
@@ -257,7 +335,7 @@ export default function TablePage() {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <TableView
               columns={columns}
-              records={filteredRecords}
+              records={finalFilteredRecords}
               onUpdateRecord={handleUpdateRecord}
               onDeleteRecord={handleDeleteRecord}
               onAddRecord={handleAddRecord}
@@ -268,6 +346,15 @@ export default function TablePage() {
             />
           </div>
         )}
+
+        {/* Filter Modal */}
+        <FilterModal
+          isOpen={showFilterModal}
+          onClose={() => setShowFilterModal(false)}
+          columns={columns}
+          filters={filterConfig.filters}
+          onSave={handleSaveFilters}
+        />
 
         {/* Column Manager Modal */}
         <ColumnManagerModal
