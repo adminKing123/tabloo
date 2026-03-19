@@ -145,14 +145,14 @@ export default function ProjectPage() {
     <Layout>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-start gap-4 mb-6">
           <Button
             color="light"
             onClick={() => navigate(-1)}
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
-          <div className="flex items-center gap-3 flex-1">
+          <div className="flex items-start gap-3 flex-1">
             {currentProject.icon && (
               <ProjectIcon icon={currentProject.icon} className="w-10 h-10 flex-shrink-0" />
             )}

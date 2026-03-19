@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Card, Dropdown } from 'flowbite-react';
-import { Plus, ChevronLeft, Table as TableIcon, Info, ClipboardList, MoreVertical, Trash2, Edit } from 'lucide-react';
+import { Button, Card, Dropdown, Badge } from 'flowbite-react';
+import { Plus, ChevronLeft, Table as TableIcon, Info, ClipboardList, MoreVertical, Trash2, Edit, ExternalLink } from 'lucide-react';
 import { useStore } from '../store/store';
 import Layout from '../components/layout/Layout';
 import Section from '../components/sections/Section';
@@ -10,6 +10,7 @@ import TableCreateModal from '../components/tables/TableCreateModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorAlert from '../components/common/ErrorAlert';
 import { formatDateTime } from '../utils/helpers';
+import { COLUMN_TYPES } from '../utils/constants';
 
 /**
  * Record Page - Shows individual record with its nested sections and tables
@@ -137,6 +138,116 @@ export default function RecordPage() {
   const rootSections = sections.filter(s => !s.parentId && s.parentRecordId === recordId);
   const rootTables = tables.filter(t => !t.sectionId && t.parentRecordId === recordId);
 
+  // Helper function to render field value based on column type
+  const renderFieldValue = (column, value) => {
+    if (value === undefined || value === null || value === '') {
+      return <span className="text-gray-400">Empty</span>;
+    }
+
+    switch (column.type) {
+      case COLUMN_TYPES.LINKS:
+        if (!Array.isArray(value) || value.length === 0) {
+          return <span className="text-gray-400">No links</span>;
+        }
+        return (
+          <div className="flex flex-col gap-1">
+            {value.map((link, idx) => (
+              <a
+                key={idx}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 flex items-center gap-1 w-fit"
+              >
+                <ExternalLink className="w-3 h-3" />
+                <span className="underline">{link.label || link.url}</span>
+              </a>
+            ))}
+          </div>
+        );
+
+      case COLUMN_TYPES.TAGS:
+        if (!Array.isArray(value) || value.length === 0) {
+          return <span className="text-gray-400">No tags</span>;
+        }
+        return (
+          <div className="flex flex-wrap gap-1">
+            {value.map((tag, idx) => (
+              <Badge key={idx} color="info" size="sm">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        );
+
+      case COLUMN_TYPES.STATUS:
+        if (typeof value === 'object' && value.label) {
+          return (
+            <Badge
+              color="info"
+              style={{ backgroundColor: value.color || '#6B7280' }}
+            >
+              {value.label}
+            </Badge>
+          );
+        }
+        return <span>{value}</span>;
+
+      case COLUMN_TYPES.BOOLEAN:
+        return (
+          <Badge color={value ? 'success' : 'gray'}>
+            {value ? 'Yes' : 'No'}
+          </Badge>
+        );
+
+      case COLUMN_TYPES.URL:
+        return (
+          <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 flex items-center gap-1 w-fit"
+          >
+            <ExternalLink className="w-3 h-3" />
+            <span className="underline break-all">{value}</span>
+          </a>
+        );
+
+      case COLUMN_TYPES.EMAIL:
+        return (
+          <a
+            href={`mailto:${value}`}
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            {value}
+          </a>
+        );
+
+      case COLUMN_TYPES.DATE:
+        return <span>{formatDateTime(value)}</span>;
+
+      case COLUMN_TYPES.JSON:
+        if (typeof value === 'object') {
+          return (
+            <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
+              {JSON.stringify(value, null, 2)}
+            </pre>
+          );
+        }
+        return <span>{value}</span>;
+
+      default:
+        // Handle arrays and objects
+        if (Array.isArray(value)) {
+          return <span>{value.join(', ')}</span>;
+        }
+        if (typeof value === 'object') {
+          return <span>{JSON.stringify(value)}</span>;
+        }
+        return <span className="whitespace-pre-wrap break-words">{String(value)}</span>;
+    }
+  };
+
   if (loading || !currentRecord || !currentTable) {
     return (
       <Layout>
@@ -201,11 +312,11 @@ export default function RecordPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Field Values</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {columns.map((column) => (
-                  <div key={column.id}>
+                  <div key={column.id} className="flex flex-col gap-1">
                     <span className="text-sm font-medium text-gray-500">{column.name}</span>
-                    <p className="text-gray-900 whitespace-pre-wrap break-words">
-                      {currentRecord.data[column.id] || <span className="text-gray-400">Empty</span>}
-                    </p>
+                    <div className="text-gray-900">
+                      {renderFieldValue(column, currentRecord.data[column.id])}
+                    </div>
                   </div>
                 ))}
               </div>
