@@ -153,13 +153,15 @@ export default function ProjectPage() {
             <ChevronLeft className="w-5 h-5" />
           </Button>
           <div className="flex items-center gap-3 flex-1">
-            <ProjectIcon icon={currentProject.icon || 'Folder'} className="w-10 h-10" />
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+            {currentProject.icon && (
+              <ProjectIcon icon={currentProject.icon} className="w-10 h-10 flex-shrink-0" />
+            )}
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 break-words">
                 {currentProject.name}
               </h1>
               {currentProject.description && (
-                <p className="text-gray-600 mt-1">{currentProject.description}</p>
+                <p className="text-gray-600 mt-1 break-words">{currentProject.description}</p>
               )}
             </div>
           </div>

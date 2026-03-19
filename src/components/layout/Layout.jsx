@@ -10,7 +10,7 @@ export default function Layout({ children }) {
     <div className="min-h-screen bg-gray-50">
       <main
         className={`transition-all duration-300 ${
-          sidebarOpen ? 'ml-64' : 'ml-0'
+          sidebarOpen ? 'ml-64' : 'ml-16'
         }`}
       >
         <div className="p-6">
