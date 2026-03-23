@@ -210,7 +210,12 @@ export default function RecordPage() {
         if (dropdownColor) {
           return <StatusBadge label={value} color={dropdownColor} />;
         }
-        return <Badge color="gray">{value}</Badge>;
+        // Fallback for dropdown without color - use styled badge
+        return (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600">
+            {value}
+          </span>
+        );
 
       case COLUMN_TYPES.BOOLEAN:
         return (
