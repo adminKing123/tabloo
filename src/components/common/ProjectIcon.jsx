@@ -49,7 +49,11 @@ const ICON_MAP = {
  */
 export default function ProjectIcon({ icon, className = "w-6 h-6", ...props }) {
   const IconComponent = ICON_MAP[icon] || Folder;
-  return <IconComponent className={className} {...props} />;
+  // Add default text color that adapts to dark mode if no color is specified
+  const classes = className.includes('text-') 
+    ? className 
+    : `${className} text-gray-700 dark:text-gray-300`;
+  return <IconComponent className={classes} {...props} />;
 }
 
 /**

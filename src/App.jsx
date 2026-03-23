@@ -8,6 +8,7 @@ import ProjectPage from './pages/ProjectPage';
 import TablePage from './pages/TablePage';
 import GlobalTablePage from './pages/GlobalTablePage';
 import RecordPage from './pages/RecordPage';
+import SettingsPage from './pages/SettingsPage';
 import { initializeDefaultTemplates, DEFAULT_TEMPLATES } from './templates/defaultTemplates';
 import './App.css';
 
@@ -15,8 +16,14 @@ import './App.css';
  * Main App Component
  */
 function App() {
-  const { initialize, templates, createTemplate } = useStore();
+  const { initialize, templates, createTemplate, theme, setTheme } = useStore();
   const templatesInitialized = useRef(false);
+
+  // Initialize theme on app load
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+  }, [setTheme]);
 
   useEffect(() => {
     const initApp = async () => {
@@ -40,12 +47,13 @@ function App() {
   }, [templates.length, createTemplate]);
 
   return (
-    <Flowbite>
+    <Flowbite theme={{ mode: theme }}>
       <BrowserRouter>
         <div className="app-container">
           <Sidebar />
           <Routes>
             <Route path="/" element={<WorkspacePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/global-table/:tableId" element={<GlobalTablePage />} />
             <Route path="/project/:projectId" element={<ProjectPage />} />
             <Route path="/project/:projectId/table/:tableId" element={<TablePage />} />

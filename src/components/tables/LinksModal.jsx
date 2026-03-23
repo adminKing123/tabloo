@@ -116,7 +116,7 @@ export default function LinksModal({ isOpen, onClose, links = [], onChange }) {
                 {linksList.map((link, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+                    className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
                   >
                     {editingIndex === index ? (
                       <div className="flex-1 space-y-2">
@@ -152,15 +152,15 @@ export default function LinksModal({ isOpen, onClose, links = [], onChange }) {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline flex items-center gap-2 break-all"
+                            className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-2 break-all"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <ExternalLink className="w-4 h-4 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               {link.label && (
-                                <div className="font-medium text-gray-900">{link.label}</div>
+                                <div className="font-medium text-gray-900 dark:text-white">{link.label}</div>
                               )}
-                              <div className={link.label ? 'text-sm text-gray-600' : ''}>
+                              <div className={link.label ? 'text-sm text-gray-600 dark:text-gray-400' : ''}>
                                 {link.url}
                               </div>
                             </div>
@@ -191,7 +191,7 @@ export default function LinksModal({ isOpen, onClose, links = [], onChange }) {
           )}
 
           {/* Add New Link */}
-          <div className="pt-4 border-t border-gray-200">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <Label className="mb-3 text-base font-semibold">Add New Link</Label>
             <div className="space-y-3">
               <div>

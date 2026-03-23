@@ -369,12 +369,12 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
     <div className="flex flex-col">
       {/* Table */}
       <div className="overflow-x-auto" style={{ maxWidth: '100%' }}>
-        <table className="border-collapse bg-white" style={{ tableLayout: 'fixed', width: 'max-content' }}>
+        <table className="border-collapse bg-white dark:bg-gray-800" style={{ tableLayout: 'fixed', width: 'max-content' }}>
         <thead>
-          <tr className="bg-gray-50 border-b-2 border-gray-200">
+          <tr className="bg-gray-50 dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
             {/* Row reorder handle - Fixed system column */}
             <th 
-              className="text-center px-2 py-3 bg-gray-100" 
+              className="text-center px-2 py-3 bg-gray-100 dark:bg-gray-800" 
               style={{ width: '40px', minWidth: '40px' }}
               title="Drag to reorder records"
             >
@@ -382,7 +382,7 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
             </th>
             {/* Record details link - Fixed system column */}
             <th 
-              className="text-center px-2 py-3 bg-gray-100" 
+              className="text-center px-2 py-3 bg-gray-100 dark:bg-gray-800" 
               style={{ width: '40px', minWidth: '40px' }}
               title="Record details"
             >
@@ -403,17 +403,17 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                   maxWidth: `${getColumnWidth(column)}px`,
                   position: 'relative'
                 }}
-                className={`text-left px-4 py-3 font-semibold text-gray-900 transition-colors ${
+                className={`text-left px-4 py-3 font-semibold text-gray-900 dark:text-white transition-colors ${
                   draggedColumnIndex === index ? 'opacity-50' : ''
                 }`}
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   <div className="cursor-move flex-shrink-0">
-                    <GripVertical className="w-4 h-4 text-gray-400" />
+                    <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   </div>
                   <div 
                     className={`flex items-center gap-2 flex-1 ${
-                      column.sortable === true ? 'cursor-pointer hover:text-blue-600' : ''
+                      column.sortable === true ? 'cursor-pointer hover:text-blue-600 dark:hover:text-blue-400' : ''
                     }`}
                     onClick={(e) => handleColumnSort(column, e.shiftKey)}
                   >
@@ -426,16 +426,16 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                       const sortInfo = sortIndex >= 0 ? sortColumns[sortIndex] : null;
                       
                       return (
-                        <span className="text-gray-400 flex items-center gap-0.5">
+                        <span className="text-gray-400 dark:text-gray-500 flex items-center gap-0.5">
                           {sortInfo ? (
                             <>
                               {sortInfo.direction === 'asc' ? (
-                                <ArrowUp className="w-4 h-4 text-blue-600" />
+                                <ArrowUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                               ) : (
-                                <ArrowDown className="w-4 h-4 text-blue-600" />
+                                <ArrowDown className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                               )}
                               {sortColumns.length > 1 && (
-                                <span className="text-xs font-bold text-blue-600">{sortIndex + 1}</span>
+                                <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{sortIndex + 1}</span>
                               )}
                             </>
                           ) : (
@@ -448,12 +448,12 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 </div>
                 {/* Resize handle */}
                 <div
-                  className="absolute top-0 -right-2 w-4 h-full cursor-col-resize flex items-center justify-center group hover:bg-blue-50"
+                  className="absolute top-0 -right-2 w-4 h-full cursor-col-resize flex items-center justify-center group hover:bg-blue-50 dark:hover:bg-blue-900/30"
                   onMouseDown={(e) => handleResizeMouseDown(e, column)}
                   onClick={(e) => e.stopPropagation()}
                   style={{ zIndex: 20 }}
                 >
-                  <div className="w-0.5 h-full bg-gray-300 group-hover:bg-blue-500 transition-colors"></div>
+                  <div className="w-0.5 h-full bg-gray-300 dark:bg-gray-600 group-hover:bg-blue-500 dark:group-hover:bg-blue-400 transition-colors"></div>
                 </div>
               </th>
             ))}
@@ -472,23 +472,23 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
               onDragLeave={handleRecordDragLeave}
               onDrop={(e) => handleRecordDrop(e, record.id)}
               onDragEnd={handleRecordDragEnd}
-              className={`border-b border-gray-200 transition-all duration-500 ${
+              className={`border-b border-gray-200 dark:border-gray-700 transition-all duration-500 ${
                 draggedRecordId === record.id ? 'opacity-50' : ''
               } ${
                 isRecentlyAdded 
-                  ? 'bg-blue-50 ring-2 ring-blue-400 ring-inset animate-pulse' 
-                  : 'hover:bg-gray-50'
+                  ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-400 dark:ring-blue-500 ring-inset animate-pulse' 
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}
             >
               {/* Row reorder handle */}
-              <td className="px-2 py-2 text-center cursor-move bg-gray-50" style={{ width: '40px' }}>
-                <GripVertical className="w-4 h-4 text-gray-400 mx-auto" />
+              <td className="px-2 py-2 text-center cursor-move bg-gray-50 dark:bg-gray-900" style={{ width: '40px' }}>
+                <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500 mx-auto" />
               </td>
               {/* Record details link */}
-              <td className="px-1 py-2 text-center bg-gray-50" style={{ width: '40px' }}>
+              <td className="px-1 py-2 text-center bg-gray-50 dark:bg-gray-900" style={{ width: '40px' }}>
                 <button
                   onClick={() => navigate(`/project/${projectId}/table/${tableId}/record/${record.id}`)}
-                  className="p-1.5 rounded hover:bg-gray-200 text-gray-400 hover:text-blue-600 transition-colors"
+                  className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   title={`Open record ${record.id}`}
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -497,7 +497,7 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
               {visibleColumns.map((column) => (
                 <td 
                   key={column.id} 
-                  className="border-r border-gray-100"
+                  className="border-r border-gray-100 dark:border-gray-700"
                   style={{ 
                     width: `${getColumnWidth(column)}px`,
                     maxWidth: `${getColumnWidth(column)}px`,
@@ -531,7 +531,7 @@ export default function TableView({ columns, records, onUpdateRecord, onDeleteRe
                 className="px-4 py-12 text-center"
               >
                 <div className="flex flex-col items-center gap-3">
-                  <p className="text-gray-500">No records yet</p>
+                  <p className="text-gray-500 dark:text-gray-400">No records yet</p>
                   <Button
                     size="sm"
                     onClick={onAddRecord}

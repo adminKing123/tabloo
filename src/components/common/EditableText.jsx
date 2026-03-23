@@ -28,7 +28,7 @@ export default function EditableText({
         placeholder={placeholder}
         onKeyDown={handleKeyDown}
         onBlur={(e) => onSave(e.target.value)}
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         autoFocus
       />
     </div>
@@ -52,7 +52,7 @@ export function EditableTextarea({
         defaultValue={value}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         autoFocus
       />
       <div className="flex gap-2">

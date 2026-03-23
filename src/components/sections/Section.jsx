@@ -27,15 +27,15 @@ export default function Section({
 
   return (
     <div
-      className="border-l-2 border-gray-200 hover:border-blue-400 transition-colors"
+      className="border-l-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
       style={{ marginLeft: `${paddingLeft}px` }}
     >
-      <Card className="mb-4">
+      <Card className="mb-4 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1">
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
             >
               {isExpanded ? (
                 <ChevronDown className="w-5 h-5" />
@@ -43,10 +43,10 @@ export default function Section({
                 <ChevronRight className="w-5 h-5" />
               )}
             </button>
-            <h3 className="text-lg font-semibold text-gray-900 break-words">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white break-words">
               {section.name}
             </h3>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               ({tables.length} tables, {childSections.length} sections)
             </span>
           </div>
@@ -72,8 +72,8 @@ export default function Section({
               label=""
               dismissOnClick={true}
               renderTrigger={() => (
-                <button className="p-1 hover:bg-gray-100 rounded">
-                  <MoreVertical className="w-5 h-5 text-gray-600" />
+                <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                  <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
               )}
             >
@@ -95,21 +95,21 @@ export default function Section({
                 {tables.map((table) => (
                   <div
                     key={table.id}
-                    className="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
+                    className="w-full flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group"
                   >
                     <button
                       onClick={() => onTableClick(table)}
                       className="flex items-center gap-3 flex-1 text-left"
                     >
-                      <TableIcon className="w-5 h-5 text-gray-600" />
-                      <span className="font-medium text-gray-900 break-words">{table.name}</span>
+                      <TableIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                      <span className="font-medium text-gray-900 dark:text-white break-words">{table.name}</span>
                     </button>
                     <Dropdown
                       label=""
                       dismissOnClick={true}
                       renderTrigger={() => (
-                        <button className="p-1 hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreVertical className="w-4 h-4 text-gray-600" />
+                        <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          <MoreVertical className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                         </button>
                       )}
                     >
@@ -127,7 +127,7 @@ export default function Section({
 
             {/* Message if empty */}
             {tables.length === 0 && childSections.length === 0 && (
-              <p className="text-sm text-gray-500 italic">
+              <p className="text-sm text-gray-500 dark:text-gray-400 italic">
                 No tables or sections yet. Add one to get started.
               </p>
             )}

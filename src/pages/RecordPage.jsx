@@ -277,13 +277,13 @@ export default function RecordPage() {
           </Button>
           <div className="flex-1">
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-              <span className="hover:text-gray-700 cursor-pointer" onClick={() => navigate(-1)}>
+              <span className="hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer" onClick={() => navigate(-1)}>
                 {currentTable.name}
               </span>
               <span>›</span>
-              <span className="text-gray-700 font-medium">Record Details</span>
+              <span className="text-gray-700 dark:text-gray-300 font-medium">Record Details</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               {currentRecord.id.substring(0, 12)}...
             </h1>
           </div>
@@ -293,19 +293,19 @@ export default function RecordPage() {
         {error && <ErrorAlert message={error} onClose={clearError} />}
 
         {/* Record Metadata */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
-              <Info className="w-4 h-4 text-gray-500" />
-              <span className="text-xs font-medium text-gray-500">ID:</span>
-              <span className="text-xs font-mono text-gray-900">{currentRecord.id.substring(0, 12)}...</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+              <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">ID:</span>
+              <span className="text-xs font-mono text-gray-900 dark:text-white">{currentRecord.id.substring(0, 12)}...</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-gray-500">Created:</span>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Created:</span>
               <DateDisplay date={currentRecord.createdAt} compact={true} showTime={false} />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-gray-500">Updated:</span>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Updated:</span>
               <DateDisplay date={currentRecord.updatedAt} compact={true} showTime={false} />
             </div>
           </div>
@@ -313,20 +313,20 @@ export default function RecordPage() {
 
         {/* Record Data */}
         {currentRecord.data && Object.keys(currentRecord.data).length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-            <div className="border-b border-gray-200 px-6 py-4">
-              <h2 className="text-lg font-semibold text-gray-900">Field Data</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+            <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Field Data</h2>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {columns.map((column) => (
                   <div key={column.id} className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-gray-700">{column.name}</span>
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{column.name}</span>
                       {column.required && (
                         <span className="text-red-500 text-xs">*</span>
                       )}
-                      <span className="text-xs text-gray-400 uppercase">{column.type}</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 uppercase">{column.type}</span>
                     </div>
                     <div className="pl-0">
                       {renderFieldValue(column, currentRecord.data[column.id])}
@@ -339,9 +339,9 @@ export default function RecordPage() {
         )}
 
         {/* Add Nested Content */}
-        <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Add Nested Content</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Add Nested Content</h3>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button onClick={() => handleCreateSection()} size="sm">
@@ -358,26 +358,26 @@ export default function RecordPage() {
         {/* Root Tables */}
         {rootTables.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Nested Tables</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">Nested Tables</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {rootTables.map((table) => (
                 <div
                   key={table.id}
-                  className="flex items-center gap-3 p-4 bg-white border-2 border-gray-200 hover:border-blue-400 rounded-lg transition-colors group"
+                  className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 rounded-lg transition-colors group"
                 >
                   <button
                     onClick={() => handleTableClick(table)}
                     className="flex items-center gap-3 flex-1 text-left"
                   >
-                    <TableIcon className="w-6 h-6 text-gray-600" />
-                    <span className="font-medium text-gray-900">{table.name}</span>
+                    <TableIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                    <span className="font-medium text-gray-900 dark:text-white">{table.name}</span>
                   </button>
                   <Dropdown
                     label=""
                     dismissOnClick={true}
                     renderTrigger={() => (
-                      <button className="p-1 hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        <MoreVertical className="w-5 h-5 text-gray-600" />
+                      <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                       </button>
                     )}
                   >
@@ -397,7 +397,7 @@ export default function RecordPage() {
         {/* Sections */}
         {rootSections.length > 0 ? (
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Nested Sections</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Nested Sections</h3>
             {rootSections.map((section) => (
               <Section
                 key={section.id}

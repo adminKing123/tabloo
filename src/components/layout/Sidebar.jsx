@@ -1,5 +1,5 @@
 import { Sidebar as FlowbiteSidebar } from 'flowbite-react';
-import { Home, FolderOpen, Menu, X } from 'lucide-react';
+import { Home, FolderOpen, Menu, X, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import ProjectIcon from '../common/ProjectIcon';
@@ -13,7 +13,7 @@ export default function Sidebar() {
 
   return (
     <div 
-      className={`fixed top-0 left-0 h-screen bg-gray-50 border-r border-gray-200 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 h-screen bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-40 transition-all duration-300 ${
         sidebarOpen ? 'w-64' : 'w-16'
       }`}
       onMouseEnter={() => !sidebarOpen && toggleSidebar()}
@@ -21,24 +21,24 @@ export default function Sidebar() {
     >
       <div className="flex flex-col h-full">
         {/* Header - Fixed height for consistent alignment */}
-        <div className="h-16 flex items-center justify-center border-b border-gray-200 px-4">
+        <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700 px-4">
           {sidebarOpen ? (
             <>
-              <h1 className="text-xl font-bold text-gray-900 flex-1">Tabloo</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white flex-1">Tabloo</h1>
               <button
                 onClick={toggleSidebar}
-                className="p-1 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
               </button>
             </>
           ) : (
             <button
               onClick={toggleSidebar}
-              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
               title="Open sidebar"
             >
-              <Menu className="w-6 h-6 text-gray-700" />
+              <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
             </button>
           )}
         </div>
@@ -51,8 +51,8 @@ export default function Sidebar() {
               to="/"
               className={`h-10 flex items-center gap-3 px-3 mx-2 my-1 rounded-lg transition-colors ${
                 location.pathname === '/'
-                  ? 'bg-blue-100 text-blue-600'
-                  : 'text-gray-700 hover:bg-gray-200'
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
               } ${!sidebarOpen ? 'justify-center' : ''}`}
               title={!sidebarOpen ? 'Workspace' : ''}
             >
@@ -66,11 +66,11 @@ export default function Sidebar() {
                 {/* Fixed height header to prevent icon shifting */}
                 <div className="h-10 flex items-center justify-center px-3 mt-2 mb-1">
                   {sidebarOpen ? (
-                    <span className="text-xs font-semibold text-gray-500 uppercase w-full">
+                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase w-full">
                       Projects
                     </span>
                   ) : (
-                    <div className="w-8 h-px bg-gray-300"></div>
+                    <div className="w-8 h-px bg-gray-300 dark:bg-gray-700"></div>
                   )}
                 </div>
                 
@@ -80,8 +80,8 @@ export default function Sidebar() {
                     to={`/project/${project.id}`}
                     className={`h-10 flex items-center gap-3 px-3 mx-2 my-1 rounded-lg transition-colors ${
                       location.pathname === `/project/${project.id}`
-                        ? 'bg-blue-100 text-blue-600'
-                        : 'text-gray-700 hover:bg-gray-200'
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
                     } ${!sidebarOpen ? 'justify-center' : ''}`}
                     title={!sidebarOpen ? project.name : ''}
                   >
@@ -98,6 +98,22 @@ export default function Sidebar() {
             )}
           </div>
         </nav>
+
+        {/* Settings at Bottom */}
+        <div className="border-t border-gray-200 dark:border-gray-700 p-2">
+          <Link
+            to="/settings"
+            className={`h-10 flex items-center gap-3 px-3 mx-0 rounded-lg transition-colors ${
+              location.pathname === '/settings'
+                ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
+            } ${!sidebarOpen ? 'justify-center' : ''}`}
+            title={!sidebarOpen ? 'Settings' : ''}
+          >
+            <Settings className="w-5 h-5 flex-shrink-0" />
+            {sidebarOpen && <span className="font-medium whitespace-nowrap overflow-hidden">Settings</span>}
+          </Link>
+        </div>
       </div>
     </div>
   );

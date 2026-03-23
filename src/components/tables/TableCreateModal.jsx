@@ -151,18 +151,18 @@ export default function TableCreateModal({
                       onClick={() => setSelectedTemplate(template)}
                       className={`p-4 text-left border-2 rounded-lg transition-all ${
                         selectedTemplate?.id === template.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                       }`}
                     >
                       <div className="mb-2">
                         <ProjectIcon icon={template.icon} className="w-8 h-8" />
                       </div>
-                      <h4 className="font-semibold text-gray-900">{template.name}</h4>
-                      <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{template.name}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 whitespace-pre-wrap">
                         {template.description}
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                         {template.columns?.length || 0} columns
                       </p>
                     </button>

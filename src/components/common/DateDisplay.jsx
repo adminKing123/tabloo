@@ -69,7 +69,7 @@ const getDateStyle = (date) => {
  */
 export default function DateDisplay({ date, compact = false, showTime = false }) {
   if (!date) {
-    return <span className="text-gray-400 text-sm">No date</span>;
+    return <span className="text-gray-400 dark:text-gray-500 text-sm">No date</span>;
   }
 
   const relativeTime = getRelativeTime(date);
@@ -86,7 +86,7 @@ export default function DateDisplay({ date, compact = false, showTime = false })
     // Compact mode for table cells
     return (
       <div 
-        className={`inline-flex items-center gap-1.5 px-2 py-1 rounded ${style.bg} ${style.text} border ${style.border}`}
+        className={`inline-flex items-center gap-1.5 px-2 py-1 rounded ${style.bg} dark:bg-gray-800 ${style.text} dark:text-gray-300 border ${style.border} dark:border-gray-700`}
         title={showTime ? `${absoluteDate} at ${timeString}` : absoluteDate}
       >
         <Calendar className="w-3 h-3 flex-shrink-0" />
@@ -95,7 +95,7 @@ export default function DateDisplay({ date, compact = false, showTime = false })
         </span>
         {showTime && (
           <>
-            <span className="text-gray-400">•</span>
+            <span className="text-gray-400 dark:text-gray-500">•</span>
             <Clock className="w-3 h-3 flex-shrink-0" />
             <span className="text-xs">{timeString}</span>
           </>
@@ -107,7 +107,7 @@ export default function DateDisplay({ date, compact = false, showTime = false })
   // Full display mode for detail views
   return (
     <div className="flex flex-col gap-1">
-      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${style.bg} ${style.text} border ${style.border} w-fit`}>
+      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${style.bg} dark:bg-gray-800 ${style.text} dark:text-gray-300 border ${style.border} dark:border-gray-700 w-fit`}>
         <Calendar className="w-4 h-4 flex-shrink-0" />
         <div className="flex flex-col">
           {relativeTime && (
@@ -121,7 +121,7 @@ export default function DateDisplay({ date, compact = false, showTime = false })
         </div>
       </div>
       {showTime && (
-        <div className="flex items-center gap-1.5 text-gray-500 text-xs ml-1">
+        <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-xs ml-1">
           <Clock className="w-3 h-3" />
           <span>{timeString}</span>
         </div>

@@ -8,7 +8,7 @@ export default function LoadingSpinner({ size = 'lg', message = 'Loading...' }) 
     <div className="flex flex-col items-center justify-center p-8">
       <Spinner size={size} />
       {message && (
-        <p className="mt-4 text-gray-600">{message}</p>
+        <p className="mt-4 text-gray-600 dark:text-gray-400">{message}</p>
       )}
     </div>
   );

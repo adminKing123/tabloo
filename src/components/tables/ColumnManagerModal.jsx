@@ -369,15 +369,15 @@ export default function ColumnManagerModal({ isOpen, onClose, columns, onSave })
                       {column.optionsSource === 'table' && (
                         <div className="mt-2">
                           {column.linkedTable ? (
-                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-start gap-2">
-                                  <Database className="w-5 h-5 text-blue-600 mt-0.5" />
+                                  <Database className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                                   <div>
-                                    <div className="text-sm font-medium text-gray-900">
+                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
                                       {column.linkedTable.tableName}
                                     </div>
-                                    <div className="text-xs text-gray-600">
+                                    <div className="text-xs text-gray-600 dark:text-gray-400">
                                       Column: {column.linkedTable.columnName}
                                     </div>
                                   </div>
@@ -385,7 +385,7 @@ export default function ColumnManagerModal({ isOpen, onClose, columns, onSave })
                                 <button
                                   type="button"
                                   onClick={() => handleClearTableLink(index)}
-                                  className="text-gray-500 hover:text-red-600 transition-colors"
+                                  className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                                   title="Remove link"
                                 >
                                   <X className="w-4 h-4" />
@@ -493,19 +493,19 @@ export default function ColumnManagerModal({ isOpen, onClose, columns, onSave })
 
         {/* Global Fields Section */}
         {showGlobalFields && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="font-semibold text-gray-900 mb-3">Global Fields</h3>
+          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Global Fields</h3>
             {globalFields.length === 0 ? (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 No global fields yet. Save a column as a global field to reuse it across tables.
               </p>
             ) : (
               <div className="space-y-2">
                 {globalFields.map((field) => (
-                  <div key={field.id} className="flex items-center justify-between p-3 bg-white rounded border border-gray-200">
+                  <div key={field.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{field.name}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="font-medium text-gray-900 dark:text-white">{field.name}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         {COLUMN_TYPE_LABELS[field.type]}
                         {field.required && ' • Required'}
                       </div>

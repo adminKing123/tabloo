@@ -224,7 +224,7 @@ export default function FilterModal({ isOpen, onClose, columns, filters, onSave 
             <select
               value={filter.value}
               onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
-              className="block w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">Select option</option>
               {column.options.map((opt, idx) => {
@@ -265,12 +265,12 @@ export default function FilterModal({ isOpen, onClose, columns, filters, onSave 
         <div className="space-y-4">
           {/* Filter Logic Selector */}
           {localFilters.length > 1 && (
-            <div className="flex items-center gap-2 pb-2 border-b">
-              <span className="text-sm text-gray-600">Show records where</span>
+            <div className="flex items-center gap-2 pb-2 border-b dark:border-gray-700">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Show records where</span>
               <select
                 value={filterLogic}
                 onChange={(e) => setFilterLogic(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                className="px-3 py-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="AND">All conditions match (AND)</option>
                 <option value="OR">Any condition matches (OR)</option>
@@ -281,9 +281,9 @@ export default function FilterModal({ isOpen, onClose, columns, filters, onSave 
           {/* Filter Rules */}
           <div className="space-y-3">
             {localFilters.map((filter, index) => (
-              <div key={filter.id} className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg">
+              <div key={filter.id} className="flex items-start gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 {/* Filter number */}
-                <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full text-xs font-semibold mt-2">
+                <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-semibold mt-2">
                   {index + 1}
                 </div>
 
@@ -292,7 +292,7 @@ export default function FilterModal({ isOpen, onClose, columns, filters, onSave 
                   <select
                     value={filter.columnId}
                     onChange={(e) => handleFilterChange(filter.id, 'columnId', e.target.value)}
-                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
+                    className="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
                   >
                     {columns.map(col => (
                       <option key={col.id} value={col.id}>
@@ -305,7 +305,7 @@ export default function FilterModal({ isOpen, onClose, columns, filters, onSave 
                   <select
                     value={filter.operator}
                     onChange={(e) => handleFilterChange(filter.id, 'operator', e.target.value)}
-                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
+                    className="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
                   >
                     {getOperatorsForColumn(filter.columnId).map(op => (
                       <option key={op.value} value={op.value}>
@@ -321,7 +321,7 @@ export default function FilterModal({ isOpen, onClose, columns, filters, onSave 
                 {/* Remove button */}
                 <button
                   onClick={() => handleRemoveFilter(filter.id)}
-                  className="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-2"
+                  className="flex-shrink-0 p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors mt-2"
                   disabled={localFilters.length === 1}
                 >
                   <X className="w-4 h-4" />

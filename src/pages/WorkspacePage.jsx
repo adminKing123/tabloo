@@ -197,8 +197,8 @@ export default function WorkspacePage() {
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Workspace</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Workspace</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               {activeTab === 0 
                 ? `${projects.length} ${projects.length === 1 ? 'project' : 'projects'}`
                 : `${globalTables.length} ${globalTables.length === 1 ? 'global table' : 'global tables'}`
@@ -250,7 +250,7 @@ export default function WorkspacePage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="updatedAt">Last Updated</option>
                 <option value="createdAt">Date Created</option>
@@ -261,11 +261,11 @@ export default function WorkspacePage() {
             {/* Projects Grid */}
             {sortedProjects.length === 0 ? (
               <div className="text-center py-12">
-                <Folder className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <Folder className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   {searchTerm ? 'No projects found' : 'No projects yet'}
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
                   {searchTerm
                     ? 'Try adjusting your search'
                     : 'Create your first project to get started'}
@@ -288,12 +288,12 @@ export default function WorkspacePage() {
           <Tabs.Item title="Tables (Global Tables)" icon={Database}>
             <div className="mt-4">
               {globalTables.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 rounded-lg">
-                  <Database className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <Database className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                     No global tables yet
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Create global tables to share data across all your projects
                   </p>
                 </div>
@@ -302,21 +302,21 @@ export default function WorkspacePage() {
                   {globalTables.map((table) => (
                     <div
                       key={table.id}
-                      className="flex items-center gap-3 p-4 bg-white border-2 border-gray-200 hover:border-blue-400 rounded-lg transition-colors group"
+                      className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 rounded-lg transition-colors group"
                     >
                       <button
                         onClick={() => handleTableClick(table)}
                         className="flex items-center gap-3 flex-1 text-left min-w-0"
                       >
-                        <Database className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                        <span className="font-medium text-gray-900 break-words">{table.name}</span>
+                        <Database className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                        <span className="font-medium text-gray-900 dark:text-white break-words">{table.name}</span>
                       </button>
                       <Dropdown
                         label=""
                         dismissOnClick={true}
                         renderTrigger={() => (
-                          <button className="p-1 hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                            <MoreVertical className="w-5 h-5 text-gray-600" />
+                          <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                           </button>
                         )}
                       >

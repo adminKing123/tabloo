@@ -166,7 +166,7 @@ export default function TableCell({ column, value, onChange }) {
               }}
               onBlur={() => setIsEditing(false)}
               autoFocus
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500"
               disabled={loadingOptions}
             >
               <option value="">{loadingOptions ? 'Loading...' : 'Select...'}</option>
@@ -209,7 +209,7 @@ export default function TableCell({ column, value, onChange }) {
           const option = currentOptions.find(opt => opt.label === value);
           return <StatusBadge label={value} color={option?.color} />;
         }
-        return <span className="text-gray-400">No status</span>;
+        return <span className="text-gray-400 dark:text-gray-500">No status</span>;
       
       case COLUMN_TYPES.DROPDOWN:
         if (value) {
@@ -218,37 +218,37 @@ export default function TableCell({ column, value, onChange }) {
           return option ? (
             <StatusBadge label={value} color={option?.color} />
           ) : (
-            <span>{value}</span>
+            <span className="text-gray-900 dark:text-white">{value}</span>
           );
         }
-        return <span className="text-gray-400">Not selected</span>;
+        return <span className="text-gray-400 dark:text-gray-500">Not selected</span>;
       
       case COLUMN_TYPES.DATE:
         return <DateDisplay date={value} compact={true} />;
       
       case COLUMN_TYPES.URL:
         return value ? (
-          <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
+          <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline break-all">
             {value}
           </a>
         ) : (
-          <span className="text-gray-400">No URL</span>
+          <span className="text-gray-400 dark:text-gray-500">No URL</span>
         );
       
       case COLUMN_TYPES.EMAIL:
         return value ? (
-          <a href={`mailto:${value}`} className="text-blue-600 hover:underline break-all">
+          <a href={`mailto:${value}`} className="text-blue-600 dark:text-blue-400 hover:underline break-all">
             {value}
           </a>
         ) : (
-          <span className="text-gray-400">No email</span>
+          <span className="text-gray-400 dark:text-gray-500">No email</span>
         );
       
       case COLUMN_TYPES.LONG_TEXT:
         return value ? (
-          <div className="whitespace-pre-wrap break-words">{value}</div>
+          <div className="whitespace-pre-wrap break-words text-gray-900 dark:text-white">{value}</div>
         ) : (
-          <span className="text-gray-400">No content</span>
+          <span className="text-gray-400 dark:text-gray-500">No content</span>
         );
       
       case COLUMN_TYPES.LINKS:
@@ -268,7 +268,7 @@ export default function TableCell({ column, value, onChange }) {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 text-sm flex-1 min-w-0"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline flex items-center gap-1 text-sm flex-1 min-w-0"
                       onClick={(e) => e.stopPropagation()}
                       title={link.url}
                     >
@@ -282,7 +282,7 @@ export default function TableCell({ column, value, onChange }) {
                 {/* Manage button - appears on hover */}
                 <button
                   onClick={handleOpenLinksModal}
-                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-all opacity-0 group-hover/links:opacity-100 mt-1"
+                  className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all opacity-0 group-hover/links:opacity-100 mt-1"
                 >
                   <Settings className="w-3 h-3" />
                   <span>Manage {normalizedLinks.length} link{normalizedLinks.length > 1 ? 's' : ''}</span>
@@ -291,7 +291,7 @@ export default function TableCell({ column, value, onChange }) {
             ) : (
               <button
                 onClick={handleOpenLinksModal}
-                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-600 transition-colors py-1"
+                className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-1"
               >
                 <LinkIcon className="w-3.5 h-3.5" />
                 <span>Add links</span>
@@ -310,16 +310,16 @@ export default function TableCell({ column, value, onChange }) {
       
       default:
         return value ? (
-          <span className="break-words whitespace-pre-wrap">{value}</span>
+          <span className="break-words whitespace-pre-wrap text-gray-900 dark:text-white">{value}</span>
         ) : (
-          <span className="text-gray-400">Empty</span>
+          <span className="text-gray-400 dark:text-gray-500">Empty</span>
         );
     }
   };
 
   return (
     <div
-      className="table-cell-editable min-h-[36px] px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors"
+      className="table-cell-editable min-h-[36px] px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       onClick={() => {
         if (column.type === COLUMN_TYPES.BOOLEAN || column.type === COLUMN_TYPES.LINKS) return;
         if (!isEditing) setIsEditing(true);

@@ -7,7 +7,7 @@ export default function Layout({ children }) {
   const { sidebarOpen } = useStore();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <main
         className={`transition-all duration-300 ${
           sidebarOpen ? 'ml-64' : 'ml-16'

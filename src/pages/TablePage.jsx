@@ -195,7 +195,7 @@ export default function TablePage() {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900">Table not found</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Table not found</h2>
           <Button onClick={() => navigate(`/project/${projectId}`)} className="mt-4">
             Back to Project
           </Button>
@@ -217,10 +217,10 @@ export default function TablePage() {
               <ChevronLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 break-words">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white break-words">
                 {currentTable.name}
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 {records.length} {records.length === 1 ? 'record' : 'records'}
               </p>
             </div>
@@ -238,8 +238,8 @@ export default function TablePage() {
               label=""
               dismissOnClick={true}
               renderTrigger={() => (
-                <button className="p-2 hover:bg-gray-100 rounded border border-gray-300">
-                  <MoreVertical className="w-5 h-5 text-gray-600" />
+                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800">
+                  <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
               )}
             >
@@ -315,9 +315,9 @@ export default function TablePage() {
 
         {/* Active Filters Display */}
         {filterConfig.filters.length > 0 && (
-          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-semibold text-blue-900">Active Filters ({filterConfig.logic}):</span>
+              <span className="text-sm font-semibold text-blue-900 dark:text-blue-300">Active Filters ({filterConfig.logic}):</span>
               {filterConfig.filters.map((filter, idx) => {
                 const column = columns.find(c => c.id === filter.columnId);
                 // Convert filter value to string, handling objects
@@ -336,12 +336,12 @@ export default function TablePage() {
 
         {/* Table Content */}
         {columns.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <ClipboardList className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <ClipboardList className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               No columns defined
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               Add columns to start organizing your data
             </p>
             <Button onClick={() => setShowColumnManager(true)}>
@@ -350,7 +350,7 @@ export default function TablePage() {
             </Button>
           </div>
         ) : (
-          <div className="bg-white -mx-6 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 -mx-6 overflow-hidden">
             <TableView
               columns={columns}
               records={finalFilteredRecords}

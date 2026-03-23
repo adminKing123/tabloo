@@ -20,6 +20,15 @@
   border-left-color: #3b82f6;
 }
 
+/* Dark mode nested indicators */
+.dark .nested-item {
+  border-left-color: #374151;
+}
+
+.dark .nested-item:hover {
+  border-left-color: #3b82f6;
+}
+
 /* Table styles */
 .table-cell-editable {
   min-height: 36px;
@@ -29,6 +38,10 @@
 
 .table-cell-editable:hover {
   background-color: #f9fafb;
+}
+
+.dark .table-cell-editable:hover {
+  background-color: #1f2937;
 }
 
 /* Status badges */

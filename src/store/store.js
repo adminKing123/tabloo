@@ -35,6 +35,7 @@ export const useStore = create((set, get) => ({
   loading: false,
   error: null,
   sidebarOpen: true,
+  theme: localStorage.getItem('theme') || 'light',
   
   // Actions
   
@@ -483,5 +484,34 @@ export const useStore = create((set, get) => ({
   
   clearError: () => {
     set({ error: null });
+  },
+  
+  toggleTheme: () => {
+    set((state) => {
+      const newTheme = state.theme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', newTheme);
+      
+      // Update document class
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      
+      return { theme: newTheme };
+    });
+  },
+  
+  setTheme: (theme) => {
+    localStorage.setItem('theme', theme);
+    
+    // Update document class
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    set({ theme });
   }
 }));

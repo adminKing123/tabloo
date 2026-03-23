@@ -14,8 +14,8 @@ export default function IconPicker({ selectedIcon, onSelect, className = '' }) {
           type="button"
           className={`p-3 rounded-lg border-2 transition-all ${
             selectedIcon === iconName
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-200 hover:border-gray-300'
+              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
           }`}
           onClick={() => onSelect(iconName)}
         >
