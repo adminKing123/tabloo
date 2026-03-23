@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Card, Dropdown, Badge } from 'flowbite-react';
-import { Plus, ChevronLeft, Table as TableIcon, Info, ClipboardList, MoreVertical, Trash2, Edit, ExternalLink } from 'lucide-react';
+import { Plus, ChevronLeft, Table as TableIcon, Info, ClipboardList, MoreVertical, Trash2, Edit, ExternalLink, Copy, Check } from 'lucide-react';
 import { useStore } from '../store/store';
 import Layout from '../components/layout/Layout';
 import Section from '../components/sections/Section';
@@ -44,6 +44,7 @@ export default function RecordPage() {
   const [editingTable, setEditingTable] = useState(null);
   const [parentSectionId, setParentSectionId] = useState(null);
   const [tableSectionId, setTableSectionId] = useState(null);
+  const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
     const loadTable = async () => {
@@ -125,6 +126,16 @@ export default function RecordPage() {
       } catch (error) {
         console.error('Failed to delete table:', error);
       }
+    }
+  };
+
+  const handleCopyId = async () => {
+    try {
+      await navigator.clipboard.writeText(currentRecord.id);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy ID:', error);
     }
   };
 
@@ -283,9 +294,22 @@ export default function RecordPage() {
               <span>›</span>
               <span className="text-gray-700 dark:text-gray-300 font-medium">Record Details</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {currentRecord.id.substring(0, 12)}...
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-mono">
+                {currentRecord.id}
+              </h1>
+              <button
+                onClick={handleCopyId}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                title="Copy ID"
+              >
+                {copiedId ? (
+                  <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+                ) : (
+                  <Copy className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -298,7 +322,18 @@ export default function RecordPage() {
             <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
               <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">ID:</span>
-              <span className="text-xs font-mono text-gray-900 dark:text-white">{currentRecord.id.substring(0, 12)}...</span>
+              <span className="text-xs font-mono text-gray-900 dark:text-white">{currentRecord.id}</span>
+              <button
+                onClick={handleCopyId}
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                title="Copy ID"
+              >
+                {copiedId ? (
+                  <Check className="w-3 h-3 text-green-600 dark:text-green-400" />
+                ) : (
+                  <Copy className="w-3 h-3 text-gray-500 dark:text-gray-400" />
+                )}
+              </button>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Created:</span>
