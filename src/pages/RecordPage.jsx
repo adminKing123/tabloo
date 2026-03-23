@@ -143,13 +143,13 @@ export default function RecordPage() {
   // Helper function to render field value based on column type
   const renderFieldValue = (column, value) => {
     if (value === undefined || value === null || value === '') {
-      return <span className="text-gray-400">Empty</span>;
+      return <span className="text-gray-400 dark:text-gray-500">Empty</span>;
     }
 
     switch (column.type) {
       case COLUMN_TYPES.LINKS:
         if (!Array.isArray(value) || value.length === 0) {
-          return <span className="text-gray-400">No links</span>;
+          return <span className="text-gray-400 dark:text-gray-500">No links</span>;
         }
         return (
           <div className="flex flex-col gap-1">
@@ -159,7 +159,7 @@ export default function RecordPage() {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 flex items-center gap-1 w-fit"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 w-fit"
               >
                 <ExternalLink className="w-3 h-3" />
                 <span className="underline">{link.label || link.url}</span>
@@ -170,7 +170,7 @@ export default function RecordPage() {
 
       case COLUMN_TYPES.TAGS:
         if (!Array.isArray(value) || value.length === 0) {
-          return <span className="text-gray-400">No tags</span>;
+          return <span className="text-gray-400 dark:text-gray-500">No tags</span>;
         }
         return (
           <div className="flex flex-wrap gap-1">
@@ -214,7 +214,7 @@ export default function RecordPage() {
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 flex items-center gap-1 w-fit"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 w-fit"
           >
             <ExternalLink className="w-3 h-3" />
             <span className="underline break-all">{value}</span>
@@ -225,7 +225,7 @@ export default function RecordPage() {
         return (
           <a
             href={`mailto:${value}`}
-            className="text-blue-600 hover:text-blue-800 underline"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
           >
             {value}
           </a>
@@ -237,22 +237,22 @@ export default function RecordPage() {
       case COLUMN_TYPES.JSON:
         if (typeof value === 'object') {
           return (
-            <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
+            <pre className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white p-2 rounded overflow-x-auto">
               {JSON.stringify(value, null, 2)}
             </pre>
           );
         }
-        return <span>{value}</span>;
+        return <span className="text-gray-900 dark:text-white">{value}</span>;
 
       default:
         // Handle arrays and objects
         if (Array.isArray(value)) {
-          return <span>{value.join(', ')}</span>;
+          return <span className="text-gray-900 dark:text-white">{value.join(', ')}</span>;
         }
         if (typeof value === 'object') {
-          return <span>{JSON.stringify(value)}</span>;
+          return <span className="text-gray-900 dark:text-white">{JSON.stringify(value)}</span>;
         }
-        return <span className="whitespace-pre-wrap break-words">{String(value)}</span>;
+        return <span className="whitespace-pre-wrap break-words text-gray-900 dark:text-white">{String(value)}</span>;
     }
   };
 
