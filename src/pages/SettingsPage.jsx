@@ -1,4 +1,4 @@
-import { Button, Card } from 'flowbite-react';
+import { Button } from 'flowbite-react';
 import { ChevronLeft, Moon, Sun } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/store';
@@ -16,7 +16,7 @@ export default function SettingsPage() {
     <Layout>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 mb-12">
           <Button
             color="light"
             onClick={() => navigate(-1)}
@@ -25,63 +25,51 @@ export default function SettingsPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-gray-600 dark:text-gray-400">
               Manage your application preferences
             </p>
           </div>
         </div>
 
         {/* Appearance Settings */}
-        <Card className="mb-6">
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Appearance
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Customize how Tabloo looks to you
-              </p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700 overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50">
+            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Appearance</h2>
+          </div>
+          
+          <div className="px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {isDark ? (
+                <Moon className="w-5 h-5 text-blue-500" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              )}
+              <span className="font-medium text-gray-900 dark:text-white">Theme</span>
             </div>
-
-            {/* Theme Toggle */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="flex items-center gap-3">
-                {isDark ? (
-                  <div className="p-2 bg-gray-700 rounded-lg">
-                    <Moon className="w-5 h-5 text-blue-400" />
-                  </div>
-                ) : (
-                  <div className="p-2 bg-yellow-100 rounded-lg">
-                    <Sun className="w-5 h-5 text-yellow-600" />
-                  </div>
-                )}
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white">
-                    Theme
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Currently using {isDark ? 'dark' : 'light'} mode
-                  </div>
-                </div>
-              </div>
-              <Button
-                onClick={toggleTheme}
-                color={isDark ? 'light' : 'dark'}
-              >
-                Switch to {isDark ? 'Light' : 'Dark'} Mode
-              </Button>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="theme"
+                  checked={!isDark}
+                  onChange={() => isDark && toggleTheme()}
+                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 focus:ring-2"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Light</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="theme"
+                  checked={isDark}
+                  onChange={() => !isDark && toggleTheme()}
+                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 focus:ring-2"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Dark</span>
+              </label>
             </div>
           </div>
-        </Card>
-
-        {/* More settings sections can be added here in the future */}
-        <Card>
-          <div className="text-center py-8">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              More settings coming soon...
-            </p>
-          </div>
-        </Card>
+        </div>
       </div>
     </Layout>
   );
