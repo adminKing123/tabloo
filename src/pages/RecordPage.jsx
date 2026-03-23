@@ -248,7 +248,17 @@ export default function RecordPage() {
         );
 
       case COLUMN_TYPES.DATE:
-        return <DateDisplay date={value} compact={false} showTime={false} />;
+        const dateObj = new Date(value);
+        const formattedDate = dateObj.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        return (
+          <span className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-sm font-medium">
+            {formattedDate}
+          </span>
+        );
 
       case COLUMN_TYPES.JSON:
         if (typeof value === 'object') {
